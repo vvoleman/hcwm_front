@@ -1,0 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap');
+
+:root {
+    --folder-bg: #f7b731;
+    --folder-color: black;
+    --col-size: calc(100% / 12);
+    --tag-bg: #4d4949;
+    --tag-color: white;
+    --navbar-bg: #f7b731;
+    --navbar-color: black;
+    --navbar-color-hover:black;
+    --input-label-bg:#f7b731;
+    --input-label-color:black;
+}
