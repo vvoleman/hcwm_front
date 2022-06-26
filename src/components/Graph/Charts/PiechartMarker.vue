@@ -107,6 +107,7 @@ export default {
 
             this.datasets.push({
                 label: keys,
+                borderWidth: 0.5,
                 backgroundColor: keys.map((key) => {
                     return stringToColor(trashes[key])
                 }),
