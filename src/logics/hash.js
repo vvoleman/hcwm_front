@@ -1,3 +1,5 @@
+import predefinedColors from './data/colors'
+
 function simpleHash (str, seed=0) {
 	let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
 	for (let i = 0, ch; i < str.length; i++) {
@@ -13,17 +15,23 @@ function simpleHash (str, seed=0) {
 let colors = {}
 
 function stringToColor(str = '-') {
+	let color;
 	if (colors[str] === undefined) {
-		const hash = simpleHash(str)
+		if (predefinedColors[str] === undefined) {
+			const hash = simpleHash(str)
 
-		let color = '#';
-		let i;
-		for (i = 0; i < 3; i++) {
-			const value = (hash >> (i * 8)) & 0xFF;
-			color += ('00' + value.toString(16)).substr(-2);
+			color = '#';
+			let i;
+			for (i = 0; i < 3; i++) {
+				const value = (hash >> (i * 8)) & 0xFF;
+				color += ('00' + value.toString(16)).substr(-2);
+			}
+		} else {
+			color = predefinedColors[str]
 		}
 
-		colors[str] = color
+
+		colors[str] = color;
 	}
 
 

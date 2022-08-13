@@ -5,6 +5,7 @@
 </template>
 <script>
 import L from 'leaflet'
+import { toRaw } from "vue";
 import { Icon } from 'leaflet/src/layer/marker/Icon'
 export default {
     props: {
@@ -35,7 +36,7 @@ export default {
         this.leafMarker = L.marker([this.marker.lat, this.marker.lng], {
             icon: new CustomMarker({ html: this.$el })
         })
-        this.leafMarker.addTo(this.map.leafletObject)
+        this.leafMarker.addTo(toRaw(this.map).leafletObject)
         this.computeAlignment(this.alignment)
     },
     watch: {

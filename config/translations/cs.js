@@ -15,12 +15,22 @@ const translations = {
 			'recent_items': 'Poslední přidané články'
 		},
 		"maps": {
+			"by_geography": {
+				"country": "Země",
+				"region": "Kraj",
+				"district": "ORP",
+				"amount": 'Množství',
+				"fraction": "Podíl",
+				"sum": "Celkem",
+				"no_region": "-- Nevybráno --",
+				"no_district": "-- Nevybráno --"
+			},
 			"undefined_option": "-- Nedefinováno --",
 			"choose_district": "Výběr okresu",
 			"choose_year": "Výběr roku",
 			"trashes_overview": "Vizualizace zpracování odpadů",
-			"trashes_district_yearly": "Odpady v okrese dle let",
-			"trashes_regions_yearly": "Odpady v krajích dle let",
+			"trashes_district_yearly": "Odpady na vybraném území",
+			"trashes_regions_yearly": "Odpady ve vybraném roce",
 		},
 		"pages": {
 			"collections": {

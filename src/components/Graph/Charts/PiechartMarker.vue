@@ -19,7 +19,6 @@ import {ArcElement, Chart as ChartJS, Legend, Tooltip} from 'chart.js';
 import CustomMarker from "@/components/vue-leaflet-custom-marker";
 import {Pie} from 'vue-chartjs'
 import {stringToColor} from "@/logics/hash";
-import {trashes} from "@/assets/js/trashes";
 import {getUnit} from "@/logics/units";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -109,7 +108,7 @@ export default {
                 label: keys,
                 borderWidth: 0.5,
                 backgroundColor: keys.map((key) => {
-                    return stringToColor(trashes[key])
+                    return stringToColor(key)
                 }),
                 data: data
             })

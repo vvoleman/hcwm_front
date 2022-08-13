@@ -1,9 +1,9 @@
 <template>
     <h3>{{ $t('ui.maps.trashes_regions_yearly') }}</h3>
     <div>
-        <label for="yearSelect" style="margin-right: 5px">{{$t('ui.maps.choose_year')}}:</label>
+        <label for="yearSelect" style="margin-right: 5px">{{ $t('ui.maps.choose_year') }}:</label>
         <select id="yearSelect" v-model="year">
-            <option :value="2009+i-1" :key="i" v-for="i in 10">{{2009+i-1}}</option>
+            <option :value="2009+i-1" :key="i" v-for="i in 10">{{ 2009 + i - 1 }}</option>
         </select>
     </div>
     <div class="d-md-flex flex-wrap justify-content-between " style="margin-bottom: 15px;">
@@ -14,33 +14,45 @@
                 v-model="zoom"
                 v-model:zoom="zoom"
                 :center="center"
-                :zoom-control="false"
+                :max-zoom="10"
+                :min-zoom="7"
             >
+                <l-control-layers>
+                    <l-control>
+                        <TrashLegend :trashes="getTrashesCode" />
+                    </l-control>
+                </l-control-layers>
                 <l-tile-layer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                 ></l-tile-layer>
-                <l-geo-json
-                    v-if="show"
-                    :geojson="geojson"
-                    :options="options"
-                    :options-style="styleFunction"
+                <l-layer-group v-if="show">
+                    <l-geo-json
+                        v-for="record in geojson"
+                        :key="record.id"
+                        :geojson="record"
+                        :options="options"
+                        :options-style="styleFunction"
+                    />
+                </l-layer-group>
+                <l-layer-group
 
-                />
+                    v-for="(value, key) in details"
+                    :key="key">
+                    <div v-if="canDisplayDetail(key)">
+                        <l-geo-json
+
+                            v-for="record in value"
+                            :key="record.id"
+                            :geojson="record"
+                            :options="optionsDetails"
+                        />
+                    </div>
+
+
+                </l-layer-group>
+
                 <CitiesLayer :map="map" :geojson="geojson" :year="year"/>
             </l-map>
-        </div>
-        <div class="details col-md-6 mx-auto">
-            <div class="legends">
-                <div v-for="trash in getTrashesCode" :key="trash.code" class="legend">
-                    <div class="line">
-                        <div class="trash-box" :style="{'backgroundColor': trash.color}"></div>
-                        <b>{{ trash.code }}</b>
-                    </div>
-                    <div class="text">
-                        {{ trash.name }}
-                    </div>
-                </div>
-            </div>
         </div>
         <region-details
             class="col-md-5"
@@ -52,33 +64,31 @@
     </div>
 </template>
 <script>
+/* eslint-disable */
 import {latLng} from "leaflet";
 import "leaflet/dist/leaflet.css"
-import {
-    LMap,
-    LTileLayer,
-    LMarker,
-    // LIcon,
-    // LTooltip,
-    LGeoJson,
-} from "@vue-leaflet/vue-leaflet";
-
-import {getRegionsData} from "@/logics/api/trashes";
+import {LGeoJson, LLayerGroup, LMap, LMarker, LTileLayer, LControl} from "@vue-leaflet/vue-leaflet";
 import CitiesLayer from "@/components/Graph/Charts/CitiesLayer";
+
+import {getCountryData, getRegionDetails, getRegionsData} from "@/logics/api/trashes";
 import {stringToColor} from "@/logics/hash";
 import {trashes} from "@/assets/js/trashes";
 import RegionDetails from "@/components/Graph/RegionDetails";
+import TrashLegend from "@/components/Graph/TrashLegend";
 
 export default {
     name: 'TrashByRegions',
     components: {
+        TrashLegend,
         RegionDetails,
-        CitiesLayer,
         LMap,
         LTileLayer,
         // eslint-disable-next-line vue/no-unused-components
         LMarker,
+        CitiesLayer,
         LGeoJson,
+        LLayerGroup,
+        LControl,
     },
     data() {
         return {
@@ -88,10 +98,14 @@ export default {
             iconHeight: 40,
             loading: false,
             show: true,
+            layers: [],
             enableTooltip: true,
             center: latLng(49.743876792996865, 15.339122571121992),
             marker: latLng(49.743876792996865, 15.339122571121992),
             geojson: [],
+            details: {},
+            displayDetails: {},
+            counter: 0,
             selectedRegion: null,
             fillColor: "#e4ce7f",
             url: 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',
@@ -103,17 +117,7 @@ export default {
         getTrashesCode() {
             if (this.geojson.length === 0) return [];
 
-            const trashesData = this.geojson[0].properties.trashes;
-            let data = []
-            for (const trash in trashesData) {
-                data.push({
-                    code: trash,
-                    color: stringToColor(trashes[trash]),
-                    name: trashes[trash]
-                })
-            }
-
-            return data
+            return this.geojson[0].properties.trashes;
         },
         map() {
             return this.$refs.map;
@@ -122,6 +126,11 @@ export default {
             return {
                 onEachFeature: this.onEachFeatureFunction
             };
+        },
+        optionsDetails() {
+            return {
+                onEachFeature: this.onEachFeatureFunctionDetails
+            }
         },
         styleFunction() {
             const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
@@ -135,7 +144,7 @@ export default {
                 };
             };
         },
-        onEachFeatureFunction() {
+        onEachFeatureFunctionDetails() {
             if (!this.enableTooltip) {
                 return () => {
                 };
@@ -145,16 +154,56 @@ export default {
                 layer.on('click', (e) => {
                     this.selectedRegion = e.target.feature.properties
                 })
+                // layer.on('mounted', () => {
+                //     layer.bindTooltip(
+                //         `<b>${feature.properties.name}</b>`,
+                //         {permanent: false, sticky: true}
+                //     );
+                // })
+            };
+        },
+        onEachFeatureFunction() {
+            if (!this.enableTooltip) {
+                return () => {
+                };
+            }
 
-                layer.bindTooltip(
-                    `<b>${feature.properties.name}</b>`,
-                    {permanent: false, sticky: true}
-                );
+            return (feature, layer) => {
+                layer.on('click', (e) => {
+                    this.selectedRegion = e.target.feature.properties
+                    this.toggleDetails(this.selectedRegion['ISO3166-2'])
+                })
+                layer.on('mounted', () => {
+                    layer.bindTooltip(
+                        `<b>${feature.properties.name}</b>`,
+                        {permanent: false, sticky: true}
+                    );
+                })
             };
         }
     },
+    methods: {
+        async toggleDetails(id) {
+            this.details[id] = await getRegionDetails(id)
+
+            if (Object.keys(this.displayDetails).length > 0) {
+                this.displayDetails = {}
+            }
+            this.displayDetails[id] = null;
+
+        },
+        canDisplayDetail(id) {
+            return this.displayDetails[id] !== undefined;
+        }
+    },
     async mounted() {
+        const country = await getCountryData()
         const result = await getRegionsData()
+
+        this.selectedRegion = {
+            'name': 'Česká republika',
+            'trashes': country
+        }
 
         if (result === null) {
             this.$notify({
@@ -170,32 +219,5 @@ export default {
 };
 </script>
 <style scoped>
-.trash-box {
-    width: 20px;
-    height: 20px;
-    border: 2px solid black;
-    margin-right: 10px;
-    display: inline-block;
-}
 
-.legend {
-    display: inline-block;
-    width: 100%;
-    transition: .1s;
-}
-
-.legend:hover {
-    background: #eee;
-    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.3);
-}
-
-.line {
-    padding: 5px;
-    display: flex;
-    align-items: center;
-}
-
-.text {
-    padding: 0px 5px;
-}
 </style>

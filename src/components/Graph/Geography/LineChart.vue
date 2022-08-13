@@ -1,22 +1,22 @@
 <template>
     <Line
+        :chart-options="chartOptions"
         :chart-data="getChartData"
         :dataset-id-key="datasetIdKey"
         :plugins="plugins"
         :css-classes="cssClasses"
         :styles="styles"
         :width="width"
-        :height="height"
     />
 </template>
 
 <script>
 import { Line } from 'vue-chartjs'
-import {Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement} from 'chart.js'
+import {Chart as ChartJS, Title, Filler, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement} from 'chart.js'
 import {stringToColor} from "@/logics/hash";
 import {getTrashesByDistrict} from "@/logics/api/trashes";
 
-ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale)
+ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale, Filler)
 
 export default {
     name: 'BarChart',
@@ -38,10 +38,6 @@ export default {
             type: Number,
             default: 400
         },
-        height: {
-            type: Number,
-            default: 400
-        },
         cssClasses: {
             default: '',
             type: String
@@ -53,25 +49,32 @@ export default {
         plugins: {
             type: Object,
             default: () => {}
+        },
+        trash: {
+            type: Object,
+            default: () => {}
         }
     },
     mounted() {
-        this.load()
+        this.doTheMagic(this.trash)
     },
     data() {
         return {
             datasets:[],
             labels:[],
+            hovering: false,
             chartOptions: {
                 responsive: true,
                 maintainAspectRatio: false,
                 interaction: {
                     intersect: true,
                 },
-                fill: true,
-                cubicInterpolationMode: 'monotone',
                 scales: {
+                    x: {
+                        stacked: true
+                    },
                     y: {
+                        stacked: true,
                         ticks: {
                             // Include a dollar sign in the ticks
                             callback: function(value) {
@@ -79,24 +82,30 @@ export default {
                             }
                         }
                     }
+                },
+                legend: {
+                    display: true,
                 }
             }
         }
     },
     methods:{
         doTheMagic(records){
-
             const keys = Object.keys(records)
+            if (keys.length === 0) return;
 
             let datasets = []
-            const allowed = 'F180103'
             for (const key of keys) {
                 datasets.push({
                     label: key,
                     backgroundColor: stringToColor(key),
                     data: Object.values(records[key]),
                     tension: 0.2,
-                    fill: key===allowed
+                    fill: {
+                        target: 'origin',
+                        below: 'rgb(0, 0, 255)'
+                    },
+
                 })
             }
             this.datasets = datasets
@@ -126,8 +135,8 @@ export default {
         }
     },
     watch:{
-        districtCode(){
-            this.load()
+        trash(){
+            this.doTheMagic(this.trash)
         }
     }
 }

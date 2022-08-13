@@ -2,7 +2,7 @@
     <div class="col-md-10 col-xxl-8 mx-auto">
         <h1 class="text-center" style="margin-bottom: 15px">{{ $t('ui.maps.trashes_overview') }}</h1>
         <div class="select-list">
-            <button class="select-box" :class="{'active':selected === 'byDistricts'}" @click="selected = 'byDistricts'">
+            <button class="select-box" :class="{'active':selected === 'byGeography'}" @click="selected = 'byGeography'">
                 {{ $t('ui.maps.trashes_district_yearly') }}
             </button>
             <button class="select-box" :class="{'active':selected === 'byRegions'}" @click="selected = 'byRegions'">
@@ -11,22 +11,23 @@
         </div>
         <div>
 
-            <TrashByDistricts v-if="selected === 'byDistricts'"/>
+<!--            <TrashByDistricts v-if="selected === 'byDistricts'"/>-->
+            <TrashByGeography v-if="selected === 'byGeography'" />
             <TrashByRegions v-if="selected === 'byRegions'"/>
         </div>
     </div>
 </template>
 
 <script>
-import TrashByDistricts from "@/components/Graph/TrashByDistricts";
 import TrashByRegions from "@/components/Graph/TrashByRegions";
+import TrashByGeography from "@/components/Graph/TrashByGeography";
 
 export default {
     name: "DataGraphs",
-    components: {TrashByRegions, TrashByDistricts},
+    components: {TrashByGeography, TrashByRegions},
     data() {
         return {
-            selected: 'byRegions'
+            selected: 'byGeography'
         }
     }
 }
