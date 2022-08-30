@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-show="!isEmpty">
         <h3>{{ name }}</h3>
         <li>Za rok {{year}} vyprodukováno: {{unit(sum)}}</li>
         <hr>
@@ -20,11 +20,12 @@ import {getUnit} from "@/logics/units";
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 export default {
-    name: "RegionDetails",
+    name: "GeographyDetails",
     props: {
         name: String,
-        data: {
+        trashes: {
             type: Object,
+            default: () => {}
         },
         year: Number
     },
@@ -62,14 +63,15 @@ export default {
     },
     computed:{
         getChartData() {
-            let labels = this.orderedLabels
+            if(this.isEmpty) return {}
 
+            let labels = this.orderedLabels
             const size = labels.length
             let values = []
             let arr;
             labels.forEach((label,i)=>{
                 arr = new Array(size)
-                arr[i] = this.data[label][this.year]
+                arr[i] = this.trashes[label][this.year]
 
                 values.push({
                     label: label,
@@ -78,25 +80,28 @@ export default {
                 })
             })
 
-
-
             return {
                 labels: labels,
                 datasets: values
             }
         },
         orderedLabels(){
-            return Object.keys(this.data).sort((a, b) => {
-                return this.data[b][this.year] - this.data[a][this.year]
+            return Object.keys(this.trashes).sort((a, b) => {
+                return this.trashes[b][this.year] - this.trashes[a][this.year]
             });
         },
         sum(){
-            const values = Object.values(this.data).map((item) => item[this.year])
+            const values = Object.values(this.trashes).map((item) => item[this.year])
             let sum = 0;
             for(const value of values){
                 sum += value
             }
             return sum
+        },
+        isEmpty(){
+            if(this.trashes === undefined) return true
+
+            for (let i in this.trashes) {return false} return true
         }
     },
 }

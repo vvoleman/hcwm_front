@@ -15,11 +15,12 @@ import { Line } from 'vue-chartjs'
 import {Chart as ChartJS, Title, Filler, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement} from 'chart.js'
 import {stringToColor} from "@/logics/hash";
 import {getTrashesByDistrict} from "@/logics/api/trashes";
+import {linearRegression} from "@/logics/math/regression";
 
 ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScale, LinearScale, Filler)
 
 export default {
-    name: 'BarChart',
+    name: 'LineChart',
     components: { Line },
     props: {
         districtCode: {
@@ -71,20 +72,37 @@ export default {
                 },
                 scales: {
                     x: {
-                        stacked: true
+                        // stacked: true
                     },
                     y: {
-                        stacked: true,
+                        // stacked: true,
                         ticks: {
                             // Include a dollar sign in the ticks
                             callback: function(value) {
-                                return value + ' t';
+                                return new Intl.NumberFormat(this.language, {maximumSignificantDigits:3,}).format(value) + ' t';
                             }
                         }
                     }
                 },
                 legend: {
                     display: true,
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat(this.language, { maximumSignificantDigits: 3, }).format(context.parsed.y)+' t'
+                                }
+                                return label;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -95,17 +113,37 @@ export default {
             if (keys.length === 0) return;
 
             let datasets = []
+            let color
             for (const key of keys) {
+                color = stringToColor(key)
                 datasets.push({
-                    label: key,
-                    backgroundColor: stringToColor(key),
+                    label: this.$t(`ui.graphs.trashes.${key}`),
+                    backgroundColor: color,
+                    borderColor: color,
+                    // Vyzkoušet
+                    // borderDash: [5],
                     data: Object.values(records[key]),
+                    pointBorderColor: "#000",
+                    pointRadius:5,
+                    pointHoverRadius:7,
                     tension: 0.2,
-                    fill: {
-                        target: 'origin',
-                        below: 'rgb(0, 0, 255)'
-                    },
+                })
 
+                // Regression
+                let linear = this.linear(Object.values(records[key]))
+                let data = new Array(11).fill(null);
+                data[0] = linear(2009)
+                data[data.length-1] = linear(2019)
+                datasets.push({
+                    label: `Trend ${this.$t(`ui.graphs.trashes.${key}`)}`,
+                    backgroundColor: color,
+                    borderColor: color,
+                    // Vyzkoušet
+                    // borderDash: [5],
+                    data: data,
+                    spanGaps:true,
+                    tension: 0.2,
+                    hidden:true,
                 })
             }
             this.datasets = datasets
@@ -124,6 +162,14 @@ export default {
             }
 
             this.doTheMagic(result)
+        },
+        linear(data) {
+            let y = data
+            let x = []
+            for (let i = 0; i < 11; i++) {
+                x.push(2009+i)
+            }
+            return linearRegression(x,y)
         }
     },
     computed:{

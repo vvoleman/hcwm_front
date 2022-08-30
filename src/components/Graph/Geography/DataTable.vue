@@ -4,15 +4,15 @@
         <tr>
             <th>{{ name }}</th>
             <template v-for="year in years" :key="year">
-                <th>{{ $t('ui.maps.by_geography.amount') }}<br>{{ year }}</th>
-                <th>{{ $t('ui.maps.by_geography.fraction') }}<br>{{ year }}</th>
+                <th>{{ $t('ui.graphs.by_geography.amount') }}<br>{{ year }}</th>
+                <th>{{ $t('ui.graphs.by_geography.fraction') }}<br>{{ year }}</th>
             </template>
 
         </tr>
         </thead>
         <tbody>
         <tr v-for="(trash, key) in trashes" :key="key">
-            <td>{{ key }}</td>
+            <td>{{ $t(`ui.graphs.trashes.${key}`) }}</td>
             <template v-for="(value,year) in trash" :key="year">
                 <td>{{prettify(value)}}</td>
                 <td>{{prettify(value/formatted[year]*100, '%')}}</td>
@@ -21,7 +21,7 @@
         </tbody>
         <tfoot>
             <tr>
-                <td>{{ $t('ui.maps.by_geography.sum') }}</td>
+                <td>{{ $t('ui.graphs.by_geography.sum') }}</td>
                 <template v-for="(value, year) in formatted" :key="year">
                     <td>{{ prettify(value) }}</td>
                     <td>100%</td>
@@ -32,6 +32,8 @@
 </template>
 
 <script>
+import {prettify} from "@/logics/api/geography/advanced";
+
 export default {
     name: "DataTable",
     props: {
@@ -73,10 +75,7 @@ export default {
         },
         // eslint-disable-next-line no-unused-vars
         prettify(value, suffix = ' t', precision = 2) {
-            return Number.parseFloat(value)
-                .toFixed(precision)
-                .replace(/\B(?=(\d{3})+(?!\d))/g, " ")
-                .replace('.',',')+suffix;
+            return prettify(value, suffix, precision)
         },
     },
     mounted() {
@@ -100,17 +99,5 @@ export default {
 </script>
 
 <style scoped>
-th,td{
-    text-align: center;
-}
-td:first-of-type, th:not(th:first-of-type), tfoot {
-    background: orange;
-    font-weight: bold;
-}
-th:first-of-type{
-    background: #398FF7;
-}
-td:nth-child(2n+1),th:nth-child(2n+1) {
-    border-right: 3px solid black;
-}
+@import "@/assets/css/dataTable.css";
 </style>

@@ -1,14 +1,15 @@
 <template>
     <custom-marker
         :map="map"
-        :marker="getCoords(region.properties.city.coords)"
+        :marker="getCoords(region.coords)"
     >
         <div>
             <Pie
+                :ref="region.id"
                 :chart-options="chartOptions"
                 :chart-data="chartData"
-                :width="150"
-                :height="50"
+                :width="width"
+                :height="height"
             />
         </div>
     </custom-marker>
@@ -26,9 +27,11 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 export default {
     name: "PiechartMarker",
     props: {
-        map: Object,
-        region: Object,
-        year: Number,
+        width: {type: Number, required:true},
+        height: {type: Number, required:true},
+        map: {type: Object, required: true},
+        region: {type: Object, required: true},
+        year: {type: Number, required: true},
     },
     data() {
         return {
@@ -56,7 +59,7 @@ export default {
                         position: "nearest",
                         callbacks: {
                             label: (context)=>{
-                                return `${context.label} - ${getUnit(context.raw)}`
+                                return `${this.$t('ui.graphs.trashes.'+(context.label))} - ${getUnit(context.raw)}`
                             },
                             afterBody: (context) => {
                                 context = context[0]
@@ -81,7 +84,7 @@ export default {
     },
     methods: {
         getCoords(obj) {
-            return {lat: obj[1], lng: obj[0]}
+            return {lat: obj.latitude, lng: obj.longitude}
         },
         getYear(trashes) {
             const keys = Object.keys(trashes)
@@ -93,18 +96,16 @@ export default {
             return results
         },
         updateData() {
-            this.datasets = [];
-            const region = this.region.properties.trashes;
-            const keys = Object.keys(region)
+            let datasets = []
+            const trashes = this.region.trashes.records
+            const keys = Object.keys(trashes)
 
             let data = []
-            let sums = 0
             for (const key of keys) {
-                sums += region[key][this.year]
-                data.push(region[key][this.year])
+                data.push(trashes[key])
             }
 
-            this.datasets.push({
+            datasets.push({
                 label: keys,
                 borderWidth: 0.5,
                 backgroundColor: keys.map((key) => {
@@ -114,7 +115,8 @@ export default {
             })
             this.labels = keys;
 
-            this.sum = sums
+            this.sum = this.region.trashes.sum
+            this.datasets = datasets
         }
     },
     computed: {
@@ -128,6 +130,9 @@ export default {
     watch: {
         year() {
             this.updateData()
+        },
+        width() {
+            this.$refs[this.region.id].updateChart()
         }
     }
 }

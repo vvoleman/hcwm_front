@@ -5,7 +5,6 @@ const units = {
 }
 
 function getUnit(number, precision = 2) {
-
 	if (number >= units.t) {
 		return format(number, precision, 't')
 	}

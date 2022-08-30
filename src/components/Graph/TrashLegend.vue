@@ -1,7 +1,8 @@
 <template>
     <div class="details">
-        <div class="legends">
-            <div v-for="trash in items" :key="trash.code" class="legend">
+        <button class="col-12" @click="visible = !visible">{{visible ? "Zavřít" : "Otevřít"}}</button>
+        <div class="legends" v-show="visible">
+            <div v-for="trash in trashes" :key="trash.code" class="legend">
                 <div class="line" :title="trash.name">
                     <div class="trash-box" :style="{'backgroundColor': trash.color}"></div>
                     <b>{{ trash.code }}</b>
@@ -13,29 +14,38 @@
 
 <script>
 import {stringToColor} from "@/logics/hash";
-import {trashes} from "@/assets/js/trashes";
+import {getTrashLegend} from "@/logics/api/geography/basic";
 
 export default {
     name: "TrashLegend",
-    props: {
-        trashes: {
-            type: Object,
-            default: () => {}
+    data(){
+        return {
+            visible: true,
+            trashes: {}
         }
     },
-    computed: {
-        items() {
-            let data = []
-            for (const trash in this.trashes) {
-                data.push({
-                    code: trash,
-                    color: stringToColor(trash),
-                    name: trashes[trash]
-                })
-            }
+    async mounted() {
+        let result = []
 
-            return data;
+        const trashes = (await getTrashLegend())
+
+        for (const key of Object.keys(trashes.allowed)) {
+            result.push({
+                code: key,
+                name: trashes.allowed[key],
+                color: stringToColor(key)
+            })
         }
+
+        for (const key of Object.keys(trashes.others)) {
+            result.push({
+                code: key,
+                name: trashes.others[key],
+                color: stringToColor('others')
+            })
+        }
+
+        this.trashes = result
     }
 }
 </script>

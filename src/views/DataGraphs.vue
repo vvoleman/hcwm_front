@@ -1,12 +1,12 @@
 <template>
     <div class="col-md-10 col-xxl-8 mx-auto">
-        <h1 class="text-center" style="margin-bottom: 15px">{{ $t('ui.maps.trashes_overview') }}</h1>
+        <h1 class="text-center" style="margin-bottom: 15px">{{ $t('ui.graphs.trashes_overview') }}</h1>
         <div class="select-list">
             <button class="select-box" :class="{'active':selected === 'byGeography'}" @click="selected = 'byGeography'">
-                {{ $t('ui.maps.trashes_district_yearly') }}
+                {{ $t('ui.graphs.by_geography.titles.main') }}
             </button>
             <button class="select-box" :class="{'active':selected === 'byRegions'}" @click="selected = 'byRegions'">
-                {{ $t('ui.maps.trashes_regions_yearly') }}
+                {{ $t('ui.graphs.trashes_regions_yearly') }}
             </button>
         </div>
         <div>
@@ -29,11 +29,11 @@ export default {
         return {
             selected: 'byGeography'
         }
-    }
+    },
 }
 </script>
 
-<style scoped>
+<style>
 .select-list {
     display: flex;
     flex-wrap: wrap;

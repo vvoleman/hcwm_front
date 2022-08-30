@@ -14,7 +14,10 @@ let store = {
 		'country': {},
 		'region': {},
 		'district': {}
-	}
+	},
+	'loading': {
+	},
+	'trashLegend':null
 }
 
 async function getAllCountries() {
@@ -22,7 +25,6 @@ async function getAllCountries() {
 	if (store.getAllCountries !== null) {
 		return store.getAllCountries
 	}
-
 	const response = await axios.get(`${API_ENDPOINT}/geography/country`)
 
 	if (response.status === 200) {
@@ -33,6 +35,10 @@ async function getAllCountries() {
 		return null;
 	}
 
+}
+
+async function getAllRegions() {
+	return store.getRegions
 }
 
 async function getRegions(countryId) {
@@ -53,6 +59,39 @@ async function getRegions(countryId) {
 
 }
 
+async function getTrashesOfRegions(countryId) {
+	const response = await axios.get(`${API_ENDPOINT}/geography/region/parent/${countryId}`)
+
+	if (response.status === 200) {
+		let result = {}
+		for (const region of response.data.data) {
+			store.trashes.region[region.region_id] = region.trashes
+
+			result[region.region_id] = region.trashes
+		}
+		return result
+	} else {
+		return null;
+	}
+}
+
+async function getTrashesOfDistricts(regionId) {
+	const response = await axios.get(`${API_ENDPOINT}/geography/district/parent/${regionId}`)
+
+	if (response.status === 200) {
+		console.log(response.data.data)
+		let result = {}
+		for (const district of response.data.data) {
+			store.trashes.district[district.district_id] = district.trashes
+
+			result[district.district_id] = district.trashes
+		}
+		return result
+	} else {
+		return null;
+	}
+}
+
 async function getDistricts(regionId) {
 	if (store.getDistricts[regionId] !== undefined) {
 		return store.getDistricts[regionId]
@@ -63,6 +102,7 @@ async function getDistricts(regionId) {
 	if (response.status === 200) {
 		store.getDistricts[regionId] = response.data.data.districts
 		store.trashes.region = response.data.data.trashes
+		console.log(response.data.data)
 
 		return response.data.data.districts;
 	} else {
@@ -70,12 +110,24 @@ async function getDistricts(regionId) {
 	}
 }
 
-async function getTrash(type, id) {
-	const allowed = ['country', 'region', 'district']
+async function getTrashLegend() {
+	if (store.trashLegend !== null) {
+		return store.trashLegend
+	}
 
-	if (allowed.filter(x=>x===type).length === 0) {
-		console.error(`Trash for ${type} not allowed`)
-		return {}
+	const response = await axios.get(`${API_ENDPOINT}/info/trashes/`)
+	if (response.status === 200) {
+		store.trashLegend = response.data.data
+
+		return response.data.data;
+	} else {
+		return null;
+	}
+}
+
+async function getTrash(type, id) {
+	if (!isTypeAllowed(type)) {
+		return null
 	}
 
 	if (store.trashes[type][id] !== undefined) {
@@ -83,7 +135,6 @@ async function getTrash(type, id) {
 	}
 
 	const response = await axios.get(`${API_ENDPOINT}/geography/${type}/${id}`)
-
 	if (response.status === 200) {
 		store.trashes[type][id] = response.data.data.trashes
 
@@ -135,8 +186,19 @@ function cacheName(type, id) {
 	if (result === null) return '';
 
 	store.names[type][id] = result['name']
-	console.log(type, id, store.names)
 	return result['name']
+}
+
+function isTypeAllowed(type) {
+	const allowed = ['country', 'region', 'district']
+
+	const result = allowed.filter(x=>x===type).length === 0
+
+	if (result) {
+		console.error(`Trash for ${type} not allowed`)
+	}
+
+	return !result
 }
 
 function flatten(array) {
@@ -157,5 +219,10 @@ export {
 	getRegions,
 	getDistricts,
 	getTrash,
-	getName
+	getName,
+	getAllRegions,
+	getTrashesOfRegions,
+	getTrashesOfDistricts,
+	isTypeAllowed,
+	getTrashLegend
 }

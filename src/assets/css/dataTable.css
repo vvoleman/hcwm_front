@@ -1,0 +1,35 @@
+th,td, th b{
+  width: fit-content !important;
+  max-width:100%;
+  white-space:nowrap;
+  /*background: white;*/
+  text-align: right;
+}
+th, td:first-of-type{
+  text-align: center !important;
+}
+table{
+  border:2px solid #ddd !important;
+  border-collapse: separate !important; /* Don't collapse */
+  border-spacing: 0;
+}
+tr td:first-of-type, tr th:first-of-type{
+  position:sticky;
+  background: white;
+  border-bottom:1px solid black;
+  left:0px;
+}
+th:last-of-type {
+  border-bottom: none;
+}
+
+td:first-of-type, th:not(th:first-of-type), tfoot td:not(tfoot td:first-of-type) {
+  background: orange;
+  font-weight: bold;
+}
+th:first-of-type{
+  background: #398FF7;
+}
+td:nth-child(2n+1),th:nth-child(2n+1), td {
+  border-right: 3px solid black;
+}

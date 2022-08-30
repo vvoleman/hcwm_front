@@ -1,24 +1,24 @@
 <template>
     <div class="d-flex">
         <div class="item">
-            <label for="countries">{{$t('ui.maps.by_geography.country')}}</label>
-            <select id="countries" v-model="selected.country">
+            <label for="countries">{{$t('ui.graphs.by_geography.country')}}</label>
+            <select id="countries" v-model="selected.country" disabled>
                 <option v-for="c in countries" :key="c.country_id" :value="c.country_id">{{ c.name }}</option>
             </select>
         </div>
 
         <div class="item" v-if="selected.country !== ''">
-            <label for="regions">{{$t('ui.maps.by_geography.region')}}</label>
+            <label for="regions">{{$t('ui.graphs.by_geography.region')}}</label>
             <select name="" id="regions" v-model="selected.region">
-                <option value="">{{ $t('ui.maps.by_geography.no_region') }}</option>
+                <option value="">{{ $t('ui.graphs.by_geography.no_region') }}</option>
                 <option v-for="c in regions" :key="c.region_id" :value="c.region_id">{{ c.name }}</option>
             </select>
         </div>
 
-        <div class="item" v-if="selected.region !== ''">
-            <label for="districts">{{$t('ui.maps.by_geography.district')}}</label>
+        <div class="item" v-if="!disableDistrict && selected.region !== ''">
+            <label for="districts">{{$t('ui.graphs.by_geography.district')}}</label>
             <select id="districts" v-model="selected.district">
-                <option value="">{{ $t('ui.maps.by_geography.no_district') }}</option>
+                <option value="">{{ $t('ui.graphs.by_geography.no_district') }}</option>
                 <option v-for="c in districts" :key="c.district_id" :value="c.district_id">{{ c.name }}</option>
             </select>
         </div>
@@ -26,10 +26,17 @@
 </template>
 
 <script>
-import {getAllCountries, getDistricts, getRegions, getTrash} from "@/logics/api/geography/basic";
+// eslint-disable-next-line no-unused-vars
+import {getAllCountries, getDistricts, getRegions} from "@/logics/api/geography/basic";
 
 export default {
     name: "SelectGeography",
+    props: {
+        disableDistrict: {
+            type: Boolean,
+            default: false
+        }
+    },
     data() {
         return {
             countries: [],
@@ -46,6 +53,7 @@ export default {
                 district: false
             },
             trashes: {},
+            shouldNotify: false,
             isLoading: false,
         }
     },
@@ -54,6 +62,11 @@ export default {
         this.countries = await getAllCountries()
         this.selected.country = this.countries[0].country_id
         this.setLoading('country', false)
+
+        await this.loadRegions()
+
+        this.notifyOnChange();
+        this.notifyReady();
     },
     methods:{
         notifyOnChange() {
@@ -61,25 +74,23 @@ export default {
             this.$emit('update', {
                 type: type,
                 id: this.selected[type],
-                trashes: this.trashes,
+                parentId: this.selectedParent
             })
+        },
+        notifyReady() {
+            this.$emit('ready')
         },
         setLoading(type, value) {
             this.loadings[type] = value
 
             this.isLoading = value ? value :this.loadings['country'] && this.loadings['region'] && this.loadings['district']
+        },
+        async loadRegions() {
+            this.regions = await getRegions(this.selected.country)
         }
+
     },
     computed: {
-        selectedCountry() {
-            return this.selected.country
-        },
-        selectedRegion() {
-            return this.selected.region
-        },
-        selectedDistrict() {
-            return this.selected.district
-        },
         selectedGeography() {
             const options = ['district', 'region', 'country']
             const checkChar = ''
@@ -91,52 +102,51 @@ export default {
             }
 
             return 'country'
+        },
+        selectedRegion(){return this.selected.region},
+        selectedDistrict(){return this.selected.district},
+        selectedParent() {
+            const type = this.selectedGeography
+
+            let result;
+            switch (type) {
+                case 'region':
+                    result = this.regions.filter(x => x.region_id === this.selected.region)
+
+                    return result.length > 0 ? result[0].parent_id : null
+                case 'district':
+                    result = this.districts.filter(x => x.district_id === this.selected.district)
+
+                    return result.length > 0 ? result[0].parent_id : null
+                default:
+                    return null
+            }
+
         }
     },
     watch: {
-        async selectedCountry() {
-            this.setLoading('region', true)
-            this.regions = await getRegions(this.selectedCountry)
-
-            this.trashes = await getTrash('country', this.selected.country)
-            this.notifyOnChange('selectedCountry')
-            this.setLoading('region', false)
+        selected: {
+            async handler() {
+                // this.notifyOnChange()
+            },
+            deep: true
         },
         async selectedRegion() {
             this.selected.district = ''
-            let type = 'region'
-            let id = this.selected.region
-            if (this.selectedRegion === '') {
-                type = 'country'
-                id = this.selected.country
-            } else {
+            if (this.selected.region !== '') {
                 this.setLoading('district', true)
                 this.districts = await getDistricts(this.selectedRegion)
                 this.setLoading('district', false)
+
+
             }
-            console.log(type,id,this.selected)
-            this.trashes = await getTrash(type, id)
-            this.notifyOnChange('selectedRegion')
+            this.notifyOnChange()
         },
         async selectedDistrict() {
-            let type = 'district'
-            let id = this.selected.district
 
             if (this.selected.region === "") return;
-
-            if(this.selected.district === '') {
-                type = 'region'
-                id = this.selected.region
-            }
-
-            this.setLoading(type, true)
-            console.log(`Running ${type} ${id}`)
-            this.trashes = await getTrash(type, id)
+            //
             this.notifyOnChange('selectedDistrict')
-            this.setLoading(type, false)
-        },
-        async selectedGeography() {
-            // this.trashes = await getTrash('region', this.selected.region)
         },
         async trashes() {
 

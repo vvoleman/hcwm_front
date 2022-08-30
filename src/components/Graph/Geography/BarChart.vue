@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { Bar } from 'vue-chartjs'
+import {Bar} from 'vue-chartjs'
 import {Chart as ChartJS, Title, Tooltip, Legend, LineElement, CategoryScale, LinearScale, PointElement} from 'chart.js'
 import {stringToColor} from "@/logics/hash";
 import {getTrashesByDistrict} from "@/logics/api/trashes";
@@ -21,7 +21,7 @@ ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, CategoryScal
 
 export default {
     name: 'BarChart',
-    components: { Bar },
+    components: {Bar},
     props: {
         districtCode: {
             type: Number,
@@ -29,7 +29,7 @@ export default {
         },
         chartId: {
             type: String,
-            default: 'line-chart'
+            default: 'bar-chart'
         },
         datasetIdKey: {
             type: String,
@@ -49,15 +49,18 @@ export default {
         },
         styles: {
             type: Object,
-            default: () => {}
+            default: () => {
+            }
         },
         plugins: {
             type: Object,
-            default: () => {}
+            default: () => {
+            }
         },
         trash: {
             type: Object,
-            default: () => {}
+            default: () => {
+            }
         }
     },
     mounted() {
@@ -65,9 +68,11 @@ export default {
     },
     data() {
         return {
-            datasets:[],
-            labels:[],
+            sums: {},
+            datasets: [],
+            labels: [],
             chartOptions: {
+                // animation: false,
                 responsive: true,
                 maintainAspectRatio: false,
                 interaction: {
@@ -87,7 +92,24 @@ export default {
                         ticks: {
                             // Include a dollar sign in the ticks
                             callback: function (value) {
-                                return value + ' t';
+                                return new Intl.NumberFormat(this.language, {maximumSignificantDigits:3,}).format(value) + ' t';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                let label = context.dataset.label || '';
+
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.y!== null) {
+                                    label += new Intl.NumberFormat(this.language, { maximumSignificantDigits: 3, style: 'percent', }).format(context.parsed.y/this.sums[context.label])
+                                }
+                                return label;
                             }
                         }
                     }
@@ -95,27 +117,19 @@ export default {
             }
         }
     },
-    methods:{
-        doTheMagic(records){
+    methods: {
+        doTheMagic(records) {
             // records = this.reformat(records)
-
+            if (records === null) return;
             const keys = Object.keys(records)
             if (keys.length === 0) return;
             let datasets = []
 
-            // for(const key of keys) {
-            //     datasets.push({
-            //         label: key,
-            //         backgroundColor: stringToColor(key),
-            //         data: Object.values(records[key]),
-            //         tension: 0.2,
-            //         fill: true
-            //     })
-            // }
 
+            this.sums = this.sumByYear(records)
             for (const key of keys) {
                 datasets.push({
-                    label: key,
+                    label: this.$t(`ui.graphs.trashes.${key}`),
                     backgroundColor: stringToColor(key),
                     data: Object.values(records[key]),
                     tension: 0.2,
@@ -133,7 +147,7 @@ export default {
             for (const type of keys) {
                 let obj = records[type]
                 const years = Object.keys(obj)
-                for(const year of years) {
+                for (const year of years) {
                     if (results[year] === undefined) {
                         results[year] = {}
                     }
@@ -144,10 +158,10 @@ export default {
 
             return results
         },
-        async load(){
+        async load() {
             const result = await getTrashesByDistrict(this.districtCode)
 
-            if(result === null) {
+            if (result === null) {
                 this.$notify({
                     'title': 'Chyba',
                     'text': 'Nepodařilo se získat data. Zkuste to prosím později',
@@ -157,18 +171,38 @@ export default {
             }
 
             this.doTheMagic(result)
+        },
+        sumByYear(records) {
+            let results = {}
+
+            let keys = Object.keys(records);
+            let years = Object.keys(records[keys[0]])
+            let sum
+            for (const year of years) {
+                sum = 0
+                for (const key of keys) {
+                    sum += records[key][year]
+                }
+                results[year] = sum
+            }
+
+            return results
+
         }
     },
-    computed:{
+    computed: {
         getChartData() {
             return {
                 labels: this.labels,
                 datasets: this.datasets
             }
+        },
+        language(){
+            return this.$i18n.locale
         }
     },
-    watch:{
-        trash(){
+    watch: {
+        trash() {
             this.doTheMagic(this.trash)
         }
     }

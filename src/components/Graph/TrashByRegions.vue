@@ -1,223 +1,100 @@
 <template>
-    <h3>{{ $t('ui.maps.trashes_regions_yearly') }}</h3>
+    <h3>{{ $t('ui.graphs.by_regions.titles.main') }}</h3>
     <div>
-        <label for="yearSelect" style="margin-right: 5px">{{ $t('ui.maps.choose_year') }}:</label>
+        <label for="yearSelect" style="margin-right: 5px">{{ $t('ui.graphs.choose_year') }}:</label>
         <select id="yearSelect" v-model="year">
             <option :value="2009+i-1" :key="i" v-for="i in 10">{{ 2009 + i - 1 }}</option>
         </select>
+        <SelectGeography @update="handleGeographyUpdate" :disable-district="true"/>
     </div>
-    <div class="d-md-flex flex-wrap justify-content-between " style="margin-bottom: 15px;">
-        <div style="height: 500px" class="col-md-12">
-            <l-map
-                :="false"
-                ref="map"
-                v-model="zoom"
-                v-model:zoom="zoom"
-                :center="center"
-                :max-zoom="10"
-                :min-zoom="7"
-            >
-                <l-control-layers>
-                    <l-control>
-                        <TrashLegend :trashes="getTrashesCode" />
-                    </l-control>
-                </l-control-layers>
-                <l-tile-layer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                ></l-tile-layer>
-                <l-layer-group v-if="show">
-                    <l-geo-json
-                        v-for="record in geojson"
-                        :key="record.id"
-                        :geojson="record"
-                        :options="options"
-                        :options-style="styleFunction"
-                    />
-                </l-layer-group>
-                <l-layer-group
-
-                    v-for="(value, key) in details"
-                    :key="key">
-                    <div v-if="canDisplayDetail(key)">
-                        <l-geo-json
-
-                            v-for="record in value"
-                            :key="record.id"
-                            :geojson="record"
-                            :options="optionsDetails"
-                        />
-                    </div>
-
-
-                </l-layer-group>
-
-                <CitiesLayer :map="map" :geojson="geojson" :year="year"/>
-            </l-map>
+    <div class="d-md-flex flex-wrap justify-content-between segment chart-box map-box">
+        <h4>{{ $t('ui.graphs.by_regions.titles.map') }}</h4>
+        <div class="col-md-12 map-container">
+            <MapChart
+                :year="year"
+                :type="selected.type"
+                :id="selected.id"
+            />
         </div>
-        <region-details
-            class="col-md-5"
-            v-if="selectedRegion !== null"
-            :name="selectedRegion.name"
-            :year="year"
-            :data="selectedRegion.trashes"
-        />
+        <!--        <geography-details-->
+        <!--            class="col-md-5"-->
+        <!--            :name="name"-->
+        <!--            :year="year"-->
+        <!--            :trashes="trashes"-->
+        <!--        />-->
     </div>
+    <div class="segment chart-box">
+        <h4>{{ $t('ui.graphs.by_regions.titles.table') }}</h4>
+        <div class="scroll-table">
+            <data-table v-bind="selected" :year="year"/>
+        </div>
+    </div>
+
 </template>
 <script>
-/* eslint-disable */
-import {latLng} from "leaflet";
-import "leaflet/dist/leaflet.css"
-import {LGeoJson, LLayerGroup, LMap, LMarker, LTileLayer, LControl} from "@vue-leaflet/vue-leaflet";
-import CitiesLayer from "@/components/Graph/Charts/CitiesLayer";
 
-import {getCountryData, getRegionDetails, getRegionsData} from "@/logics/api/trashes";
-import {stringToColor} from "@/logics/hash";
-import {trashes} from "@/assets/js/trashes";
-import RegionDetails from "@/components/Graph/RegionDetails";
-import TrashLegend from "@/components/Graph/TrashLegend";
+import MapChart from "@/components/Graph/Geography/MapChart";
+import SelectGeography from "@/components/Graph/Geography/SelectGeography";
+import GeographyDetails from "@/components/Graph/Geography/GeographyDetails";
+import {getName, getTrash} from "@/logics/api/geography/basic";
+import DataTable from "@/components/Graph/Regions/DataTable";
 
 export default {
     name: 'TrashByRegions',
     components: {
-        TrashLegend,
-        RegionDetails,
-        LMap,
-        LTileLayer,
+        DataTable,
         // eslint-disable-next-line vue/no-unused-components
-        LMarker,
-        CitiesLayer,
-        LGeoJson,
-        LLayerGroup,
-        LControl,
+        GeographyDetails,
+        SelectGeography,
+        MapChart
     },
     data() {
         return {
-            zoom: 7,
-            year: 2009,
-            iconWidth: 25,
-            iconHeight: 40,
-            loading: false,
-            show: true,
-            layers: [],
-            enableTooltip: true,
-            center: latLng(49.743876792996865, 15.339122571121992),
-            marker: latLng(49.743876792996865, 15.339122571121992),
-            geojson: [],
-            details: {},
-            displayDetails: {},
-            counter: 0,
-            selectedRegion: null,
-            fillColor: "#e4ce7f",
-            url: 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',
-            attribution:
-                '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            trashes: {},
+            selected: {
+                type: '',
+                id: '',
+                parentId: '',
+            },
+            year: 2009
         };
     },
     computed: {
-        getTrashesCode() {
-            if (this.geojson.length === 0) return [];
-
-            return this.geojson[0].properties.trashes;
+        name() {
+            return getName(this.selected.type, this.selected.id)
         },
-        map() {
-            return this.$refs.map;
-        },
-        options() {
-            return {
-                onEachFeature: this.onEachFeatureFunction
-            };
-        },
-        optionsDetails() {
-            return {
-                onEachFeature: this.onEachFeatureFunctionDetails
-            }
-        },
-        styleFunction() {
-            const fillColor = this.fillColor; // important! need touch fillColor in computed for re-calculate when change fillColor
-            return () => {
-                return {
-                    weight: 2,
-                    color: "#ECEFF1",
-                    opacity: 1,
-                    fillColor: fillColor,
-                    fillOpacity: 1
-                };
-            };
-        },
-        onEachFeatureFunctionDetails() {
-            if (!this.enableTooltip) {
-                return () => {
-                };
-            }
-
-            return (feature, layer) => {
-                layer.on('click', (e) => {
-                    this.selectedRegion = e.target.feature.properties
-                })
-                // layer.on('mounted', () => {
-                //     layer.bindTooltip(
-                //         `<b>${feature.properties.name}</b>`,
-                //         {permanent: false, sticky: true}
-                //     );
-                // })
-            };
-        },
-        onEachFeatureFunction() {
-            if (!this.enableTooltip) {
-                return () => {
-                };
-            }
-
-            return (feature, layer) => {
-                layer.on('click', (e) => {
-                    this.selectedRegion = e.target.feature.properties
-                    this.toggleDetails(this.selectedRegion['ISO3166-2'])
-                })
-                layer.on('mounted', () => {
-                    layer.bindTooltip(
-                        `<b>${feature.properties.name}</b>`,
-                        {permanent: false, sticky: true}
-                    );
-                })
-            };
-        }
     },
     methods: {
-        async toggleDetails(id) {
-            this.details[id] = await getRegionDetails(id)
-
-            if (Object.keys(this.displayDetails).length > 0) {
-                this.displayDetails = {}
+        async handleGeographyUpdate(data) {
+            if (data.id === this.selected.id) {
+                return
             }
-            this.displayDetails[id] = null;
 
+            this.selected = {type: data.type, id: data.id, parentId: data.parentId}
+            await this.refreshTrash(data.type, data.id)
         },
-        canDisplayDetail(id) {
-            return this.displayDetails[id] !== undefined;
+        async refreshTrash(geographyType, id) {
+            this.trashes = await getTrash(geographyType, id)
+            // this.selected.name =
         }
     },
     async mounted() {
-        const country = await getCountryData()
-        const result = await getRegionsData()
-
-        this.selectedRegion = {
-            'name': 'Česká republika',
-            'trashes': country
-        }
-
-        if (result === null) {
-            this.$notify({
-                'title': 'Chyba',
-                'text': 'Nepodařilo se získat nedávné články. Zkuste to prosím později',
-                'type': 'error'
-            })
-            return
-        }
-
-        this.geojson = result;
     },
+    watch: {}
 };
 </script>
 <style scoped>
+label {
+    clip-path: polygon(75% 0, 0 0, 0 100%, 75% 100%, 100% 50%);
+    padding: 12px 40px 12px 20px;
+    background: #f7b731;
+}
 
+select {
+    margin-left: -40px;
+    padding: 12px 20px 12px 40px;
+}
+.map-container{
+    height: 500px;
+}
 </style>

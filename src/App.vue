@@ -68,4 +68,23 @@ export default {
 .v-leave-to {
     opacity: 0;
 }
+.scroll-table{
+    width: 100%;
+    overflow: auto;
+}
+.segment{
+    margin-top:35px;
+}
+.chart {
+    height: auto;
+    min-height: 400px;
+}
+.chart-box{
+    min-height: 400px;
+    margin-top: 20px;
+    background: #fafafa;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.3);
+}
 </style>

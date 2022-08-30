@@ -46,9 +46,6 @@ export default {
     watch: {
         selected() {
             this.$emit('input', this.selected)
-        },
-        test(e){
-            console.log(e);
         }
     }
 }

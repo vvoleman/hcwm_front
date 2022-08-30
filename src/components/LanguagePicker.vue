@@ -41,7 +41,7 @@ export default {
                 code = this.$i18n.fallbackLocale
             }
             let newLanguage = this.filterLanguage(code)
-            console.log(code)
+            console.log('Selected language: '+code)
 
             if (newLanguage.length === 0) {
                 console.error('Unable to select language!');

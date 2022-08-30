@@ -1,13 +1,26 @@
 <template>
+    <h3>{{ $t('ui.graphs.by_geography.titles.main') }}</h3>
     <div>
-        <SelectGeography @update="handleSelectUpdate" @loading="handleSelectLoading"/>
+        <SelectGeography @update="handleSelectUpdate" @ready="handleReady" @loading="handleSelectLoading"/>
     </div>
-    <h1>{{selected.loading}}, {{selected.type}} - {{selected.id}}</h1>
+    <!--    <h1>{{selected.loading}}, {{selected.type}} - {{selected.id}}</h1>-->
     <spin-loader v-if="selected.loading"/>
-    <BarChart v-if="trashes !== null && !selected.loading" class="chart" :trash="trashes" height="400px"/>
-<!--    <TrashLegend :trashes="trashes" style="width:50vw"/>-->
-    <LineChart v-if="trashes !== null && !selected.loading" class="chart" :trash="trashes" height="400px"></LineChart>
-    <DataTable class="data-table" v-if="trashes !== null && !selected.loading" :trashes="trashes" :name="name" />
+    <div class="segment chart-box">
+        <h4>{{ $t('ui.graphs.by_geography.titles.individual_types') }}</h4>
+        <BarChart class="chart" :trash="trashes"/>
+    </div>
+
+    <div class="segment chart-box">
+        <h4>{{ $t('ui.graphs.by_geography.titles.trend_types') }}</h4>
+        <LineChart v-if="trashes !== null && !selected.loading" class="chart" :trash="trashes"></LineChart>
+    </div>
+
+    <div class="segment chart-box" style="min-height: 0px">
+        <h4>{{ $t('ui.graphs.by_geography.titles.table') }}</h4>
+        <div class="scroll-table">
+            <DataTable class="data-table" v-if="trashes !== null && !selected.loading" :trashes="trashes" :name="name"/>
+        </div>
+    </div>
 </template>
 
 <script>
@@ -16,8 +29,9 @@ import SelectGeography from "@/components/Graph/Geography/SelectGeography";
 import LineChart from "@/components/Graph/Geography/LineChart";
 import BarChart from "@/components/Graph/Geography/BarChart";
 import DataTable from "@/components/Graph/Geography/DataTable";
-import {getName} from "@/logics/api/geography/basic";
+import {getName, getTrash} from "@/logics/api/geography/basic";
 import SpinLoader from "@/components/SpinLoader";
+
 export default {
     name: "TrashByGeography",
     // eslint-disable-next-line vue/no-unused-components
@@ -30,13 +44,20 @@ export default {
                 id: ''
             },
             trashes: null,
+            isReady: false
         }
     },
     async mounted() {
     },
     methods: {
-        handleSelectUpdate(data) {
-            this.trashes = data.trashes
+        async handleSelectUpdate(data) {
+            if (data.id === this.selected.id) {
+                return
+            }
+
+            if (this.isReady) {
+                this.trashes = await getTrash(data.type, data.id)
+            }
 
             this.selected = {
                 loading: this.selected.loading,
@@ -46,28 +67,29 @@ export default {
         },
         handleSelectLoading(data) {
             this.selected.loading = data
+        },
+        async handleReady() {
+            if (this.isReady) return
+
+            this.isReady = true
+            this.trashes = await getTrash(this.selected.type, this.selected.id)
         }
     },
     computed: {
         name() {
-            console.log('name');
             return getName(this.selected.type, this.selected.id)
+        },
+        type() {
+            return this.selected.type
         }
     },
-    watch: {}
 }
 </script>
 
 <style scoped>
-.chart{
-    margin-top: 20px;
-    background: #fafafa;
-    border-radius: 5px;
-    padding: 10px;
-    box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.3);
-}
-.data-table{
-    width:50%;
+
+.data-table {
+    width: 50%;
     overflow: auto;
 }
 </style>
