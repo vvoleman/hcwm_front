@@ -125,10 +125,10 @@ import SelectMultiple from "@/components/SelectMultiple";
 }
 
 .advanced-filter-block {
-    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--folder-alt-shadow);
     padding: 30px;
     margin-top: 30px;
-    background: #eee;
+    background: var(--folder-alt-bg);
     border-radius: 5px;
     min-height: 50px;
 }

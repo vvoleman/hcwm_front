@@ -1,14 +1,31 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto&family=Fira+Sans&family=Josefin+Sans&family=Open+Sans&display=swap');
 
 :root {
-    --folder-bg: #f7b731;
-    --folder-color: black;
+    --main-color-darkest: #205046;
+    --main-color-dark: #1F5E4A;
+    --main-color-middle: #327F60;
+    --main-color-light: #9BAE90;
+    --main-color-lighest: #DDD3CB ;
+
+
+    --folder-bg: var(--main-color-dark);
+    --folder-alt-bg: #ede8e4;
+    --folder-alt-shadow: 0px 0px 3px 0px rgba(221,211,203,0.4);
+    --folder-alt-color: black;
+    --folder-color: white;
     --col-size: calc(100% / 12);
-    --tag-bg: #4d4949;
+    --tag-bg: var(--main-color-dark);
     --tag-color: white;
-    --navbar-bg: #f7b731;
-    --navbar-color: black;
-    --navbar-color-hover:black;
-    --input-label-bg:#f7b731;
-    --input-label-color:black;
+    --navbar-font: 'Fira Sans';
+    --navbar-bg: var(--main-color-darkest);
+    --navbar-color: white;
+    --navbar-color-hover: white;
+    --body-font: '';
+    --logo-font: 'Josefin Sans';
+    --logo-color: white;
+    --logo-size: 30px;
+    --input-label-bg: #f7b731;
+    --input-label-color: black;
+
+
 }

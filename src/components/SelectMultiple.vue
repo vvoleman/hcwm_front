@@ -66,7 +66,7 @@ export default {
 
 <style scoped>
 .filter-select label{
-    background: #666666;
+    background: var(--main-color-dark);
     font-weight: bold;
     color:white;
     padding:5px 15px;

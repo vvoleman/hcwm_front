@@ -20,12 +20,16 @@ export default {
 </script>
 
 <style>
+body{
+    font-family: var(--body-font);
+}
 .btn-gray{
     border:none;
     padding:15px;
     border-radius: 5px;
-    background: #ddd;
-    box-shadow: 0px 0px 3px 0px rgba(0,0,0,0.3);
+    color: white;
+    background: var(--main-color-dark);
+    box-shadow: 0px 0px 3px 0px rgba(221,211,203,0.3);
 }
 
 .center.icon{
@@ -80,11 +84,27 @@ export default {
     min-height: 400px;
 }
 .chart-box{
+    font-family: var(--navbar-font);
     min-height: 400px;
     margin-top: 20px;
-    background: #fafafa;
-    border-radius: 5px;
-    padding: 10px;
-    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.3);
+    background: #fbfaf9;
+    border-radius: 3px;
+    padding: 20px;
+    box-shadow: 0px 0px 3px 0px rgb(221, 211, 203);
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    background-image: linear-gradient(#ccc,#ccc);
+    background-size: 50% 2px;
+    background-position: bottom center;
+    background-repeat: no-repeat;
+}
+
+.subtitle {
+    font-size:1.3em;
+    color: var(--navbar-bg);
 }
 </style>

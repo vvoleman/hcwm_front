@@ -21,9 +21,7 @@ import CustomMarker from "@/components/vue-leaflet-custom-marker";
 import {Pie} from 'vue-chartjs'
 import {stringToColor} from "@/logics/hash";
 import {getUnit} from "@/logics/units";
-
 ChartJS.register(ArcElement, Tooltip, Legend);
-
 export default {
     name: "PiechartMarker",
     props: {
@@ -64,9 +62,7 @@ export default {
                             afterBody: (context) => {
                                 context = context[0]
                                 let arr = [];
-
                                 arr.push(((context.raw / this.sum) * 100).toFixed(2) + '%')
-
                                 return arr;
                             }
                         }
@@ -89,7 +85,6 @@ export default {
         getYear(trashes) {
             const keys = Object.keys(trashes)
             const results = {}
-
             for (const key of keys) {
                 results[key] = trashes[key][this.year]
             }
@@ -99,12 +94,10 @@ export default {
             let datasets = []
             const trashes = this.region.trashes.records
             const keys = Object.keys(trashes)
-
             let data = []
             for (const key of keys) {
                 data.push(trashes[key])
             }
-
             datasets.push({
                 label: keys,
                 borderWidth: 0.5,
@@ -114,7 +107,6 @@ export default {
                 data: data
             })
             this.labels = keys;
-
             this.sum = this.region.trashes.sum
             this.datasets = datasets
         }
@@ -139,5 +131,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

@@ -59,7 +59,7 @@ export default {
     display:inline-block;
     border-radius: 5px;
     padding: 3px 15px;
-    background: #666;
+    background: var(--main-color-darkest);
     color:white;
 
 }

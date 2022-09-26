@@ -1,7 +1,7 @@
 <template>
     <nav class="navbar navbar-expand-lg" style="margin-bottom: 10px">
-        <div class="container-fluid">
-            <router-link to="/">HCWM</router-link>
+        <div class="container-fluid align-items-start">
+            <router-link to="/"><span class="logo">HCWM</span></router-link>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="icon dripicons-menu"></span>
             </button>
@@ -12,7 +12,10 @@
                             <router-link class="nav-link" to="/">{{ $t('ui.pages.collections.navbar') }}</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" to="/graphs">{{ $t('ui.pages.map.navbar') }}</router-link>
+                            <router-link class="nav-link" to="/graphs">{{ $t('ui.pages.graphs.navbar') }}</router-link>
+                        </li>
+                        <li class="nav-item">
+                            <router-link class="nav-link" to="/about">{{ $t('ui.pages.about.navbar') }}</router-link>
                         </li>
                     </ul>
                 </div>
@@ -39,7 +42,7 @@ export default {
 
     .navbar {
         background-color: var(--navbar-bg);
-        font-family: 'Open Sans', serif;
+        font-family: var(--navbar-font), serif;
         box-shadow: 0px 1px 8px -5px rgba(0,0,0,0.75);
     }
 
@@ -71,5 +74,15 @@ export default {
 
     .navbar-right {
         margin-left: auto;
+    }
+    .logo{
+        font-family: var(--logo-font), serif;
+        color: var(--logo-color);
+        font-size: var(--logo-size);
+        text-decoration: none !important;
+        margin-right:20px;
+    }
+    a {
+        text-decoration: none;
     }
 </style>

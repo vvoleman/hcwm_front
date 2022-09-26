@@ -21,7 +21,7 @@ const translations = {
 				"district": "ORP",
 				"amount": 'Množství',
 				"fraction": "Podíl",
-				"sum": "Celkem",
+				"total": "Celkem",
 				"no_region": "-- Nevybráno --",
 				"no_district": "-- Nevybráno --",
 				"titles": {
@@ -29,14 +29,17 @@ const translations = {
 					"individual_types": "Podíl jednotlivých typů odpadů na celkové produkci na vybraném území (2009 - 2019)",
 					"trend_types": "Trend produkce jednotlivých typů odpadů (2009 - 2019)",
 					"table": "Souhrná data"
-				}
+				},
+				'include_regression': 'Zahrnout lineární regresi',
 			},
 			"by_regions": {
 				"titles": {
 					"main":"Odpady ve vybraném roce",
 					"map": "Podíl jednotlivých typů odpadů na produkci ve vybraném roce podle území",
-					"table": "Souhrná data"
-				}
+					"table": "Souhrná data",
+					"description": "Popis dat"
+				},
+				"base_layer": "Mapa"
 			},
 			"trashes": {
 				"F180101": "FF180101",
@@ -61,11 +64,15 @@ const translations = {
 		"pages": {
 			"collections": {
 				"navbar": "Přehled zdrojů",
-				"title": "List of sources"
+				"title": "Přehled"
 			},
-			"map": {
+			"graphs": {
 				"navbar": "Vizualizace",
-				"title": "Visualisation"
+				"title": "Vizualizace"
+			},
+			"about": {
+				"navbar": "O projektu",
+				"title": "O projektu"
 			}
 		}
 	}

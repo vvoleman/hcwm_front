@@ -16,6 +16,7 @@ table{
 tr td:first-of-type, tr th:first-of-type{
   position:sticky;
   background: white;
+  color:black;
   border-bottom:1px solid black;
   left:0px;
 }
@@ -24,7 +25,8 @@ th:last-of-type {
 }
 
 td:first-of-type, th:not(th:first-of-type), tfoot td:not(tfoot td:first-of-type) {
-  background: orange;
+  background: var(--main-color-dark);
+  color:white;
   font-weight: bold;
 }
 th:first-of-type{

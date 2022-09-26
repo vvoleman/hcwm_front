@@ -3,12 +3,14 @@
         <div class="results-block">
             <BreadcrumbsPath/>
             <div v-if="!isLoading">
-                <div class="folder-block">
-                    <ZoteroFolder
-                        v-for="folder in folders"
-                        :key="folder.id"
-                        :text="getTranslations(folder.text,currentLocale).text"
-                        :path="getTranslations(folder.path,currentLocale).path"/>
+                <div class="d-flex justify-content-center">
+                    <div class="folder-block">
+                        <ZoteroFolder
+                            v-for="folder in folders"
+                            :key="folder.id"
+                            :text="getTranslations(folder.text,currentLocale).text"
+                            :path="getTranslations(folder.path,currentLocale).path"/>
+                    </div>
                 </div>
                 <div>
                     <ZoteroItems
@@ -66,10 +68,8 @@ export default {
 }
 
 .folder-block {
-    justify-content: start;
     display: flex;
     flex-wrap: wrap;
-
 }
 .loader{
     margin-top:15px;

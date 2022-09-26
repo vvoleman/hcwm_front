@@ -7,6 +7,8 @@
                 <th>{{ $t('ui.graphs.by_geography.amount') }}<br>{{ year }}</th>
                 <th>{{ $t('ui.graphs.by_geography.fraction') }}<br>{{ year }}</th>
             </template>
+            <th>{{ $t('ui.graphs.by_geography.amount') }}<br>{{ $t('ui.graphs.by_geography.total') }}</th>
+            <th>{{ $t('ui.graphs.by_geography.fraction') }}<br>{{ $t('ui.graphs.by_geography.total') }}</th>
 
         </tr>
         </thead>
@@ -17,22 +19,26 @@
                 <td>{{prettify(value)}}</td>
                 <td>{{prettify(value/formatted[year]*100, '%')}}</td>
             </template>
+            <td>{{prettify(trashSums[key])}}</td>
+            <td>{{prettify(trashSums[key]/totalSum*100, '%')}}</td>
         </tr>
         </tbody>
         <tfoot>
             <tr>
-                <td>{{ $t('ui.graphs.by_geography.sum') }}</td>
+                <td>{{ $t('ui.graphs.by_geography.total') }}</td>
                 <template v-for="(value, year) in formatted" :key="year">
                     <td>{{ prettify(value) }}</td>
                     <td>100%</td>
                 </template>
+                <td>{{prettify(totalSum)}}</td>
+                <td>100%</td>
             </tr>
         </tfoot>
     </table>
 </template>
 
 <script>
-import {prettify} from "@/logics/api/geography/advanced";
+import {prettify} from "@/logics/helpers";
 
 export default {
     name: "DataTable",
@@ -48,7 +54,9 @@ export default {
     },
     data(){
         return {
-            formatted: {}
+            formatted: {},
+            trashSums: {},
+            totalSum: 0,
         }
     },
     methods:{
@@ -77,9 +85,28 @@ export default {
         prettify(value, suffix = ' t', precision = 2) {
             return prettify(value, suffix, precision)
         },
+
+        calculateTrashSums(trashes) {
+            let sums = {}
+
+            let keys = Object.keys(trashes)
+            for (const trashType of keys) {
+                if (sums[trashType] === undefined) {
+                    sums[trashType] = 0
+                }
+
+                for (const year of Object.keys(trashes[trashType])) {
+                    sums[trashType] += trashes[trashType][year]
+                }
+            }
+
+            this.trashSums = sums
+            this.totalSum = Object.values(sums).reduce((a,b)=>a+b)
+        },
     },
     mounted() {
         this.updateFormatted()
+        this.calculateTrashSums(this.trashes)
     },
     computed: {
         years() {

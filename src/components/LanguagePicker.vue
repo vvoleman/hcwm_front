@@ -95,4 +95,7 @@ a.nav-link {
     right:0;
     left:inherit;
 }
+#dropdown-language:hover, .item:hover {
+    background-size: 0;
+}
 </style>

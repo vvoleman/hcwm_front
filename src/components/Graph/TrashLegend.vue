@@ -3,10 +3,7 @@
         <button class="col-12" @click="visible = !visible">{{visible ? "Zavřít" : "Otevřít"}}</button>
         <div class="legends" v-show="visible">
             <div v-for="trash in trashes" :key="trash.code" class="legend">
-                <div class="line" :title="trash.name">
-                    <div class="trash-box" :style="{'backgroundColor': trash.color}"></div>
-                    <b>{{ trash.code }}</b>
-                </div>
+                <TrashLegendItem :code="trash.code" :name="trash.name" :color="trash.color"/>
             </div>
         </div>
     </div>
@@ -14,10 +11,14 @@
 
 <script>
 import {stringToColor} from "@/logics/hash";
-import {getTrashLegend} from "@/logics/api/geography/basic";
+import {useTrashStore} from "@/stores/Trash/TrashStore";
+import TrashLegendItem from "@/components/Graph/TrashLegendItem";
 
 export default {
     name: "TrashLegend",
+    components: {
+        TrashLegendItem
+    },
     data(){
         return {
             visible: true,
@@ -27,7 +28,7 @@ export default {
     async mounted() {
         let result = []
 
-        const trashes = (await getTrashLegend())
+        const trashes = await useTrashStore().getTrashLegend()
 
         for (const key of Object.keys(trashes.allowed)) {
             result.push({
@@ -56,13 +57,7 @@ export default {
     width: 10vw;
     box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.2);
 }
-.trash-box {
-    width: 20px;
-    height: 20px;
-    border: 2px solid black;
-    margin-right: 10px;
-    display: inline-block;
-}
+
 
 .legend {
     display: inline-block;
@@ -75,13 +70,5 @@ export default {
     box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.3);
 }
 
-.line {
-    padding: 5px;
-    display: flex;
-    align-items: center;
-}
 
-.text {
-    padding: 0px 5px;
-}
 </style>

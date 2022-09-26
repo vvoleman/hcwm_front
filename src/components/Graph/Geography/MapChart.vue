@@ -1,20 +1,19 @@
 <template>
     <l-map
-        disabled
-        :="false"
         ref="map"
-        :draggable="false"
+        :options="mapOptions"
         v-model="zoom"
         v-model:zoom="zoom"
         :center="center"
         :bounds="bounds"
-        :min-zoom="7"
-        :max-zoom="9"
     >
         <l-control>
             <TrashLegend/>
         </l-control>
+        <l-control-layers></l-control-layers>
         <l-tile-layer
+            :name="$t('ui.graphs.by_regions.base_layer')"
+            layer-type="base"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         ></l-tile-layer>
         <l-layer-group v-if="showCountry">
@@ -34,44 +33,43 @@
             />
         </l-layer-group>
         <div v-if="attempt">
-        <l-feature-group
-            ref="feature"
-            @ready="test"
-            v-for="(value, key) in details"
-            :key="key">
-            <div v-if="canDisplayDetail(key)">
-                <l-geo-json
+            <l-feature-group
+                ref="feature"
+                @ready="test"
+                v-for="(value, key) in details"
+                :key="key">
+                <div v-if="canDisplayDetail(key)">
+                    <l-geo-json
 
-                    v-for="record in value"
-                    :key="record.id"
-                    :geojson="record"
-                    :options="optionsDetails"
-                    :options-style="styleFunction"
-                />
-                <CitiesLayer
-                    :zoom="zoom"
-                    :map="map"
-                    :year="year"
-                    :type="type"
-                    :id="id"
-                />
-            </div>
+                        v-for="record in value"
+                        :key="record.id"
+                        :options="optionsDetails"
+                        :geojson="record"
+                    />
+                                    <CitiesLayer
+                                        :zoom="zoom"
+                                        :map="map"
+                                        :year="year"
+                                        :type="type"
+                                        :id="id"
+                                    />
+                </div>
 
 
-        </l-feature-group>
+            </l-feature-group>
         </div>
     </l-map>
 </template>
 
 <script>
+/* eslint-disable */
 import "leaflet/dist/leaflet.css"
 
 import TrashLegend from "@/components/Graph/TrashLegend";
-import {LControl, LGeoJson, LLayerGroup, LMap, LMarker, LTileLayer, LFeatureGroup} from "@vue-leaflet/vue-leaflet";
+import {LControl, LGeoJson, LLayerGroup, LMap, LMarker, LTileLayer, LFeatureGroup, LControlLayers} from "@vue-leaflet/vue-leaflet";
 import CitiesLayer from "@/components/Graph/Regions/CitiesLayer";
 import {latLng} from "leaflet";
-// eslint-disable-next-line no-unused-vars
-import {getDistrictsBorders, getRegionsBorders} from "@/logics/api/geography/geojson";
+import {useGeojsonBordersStore} from "@/stores/Geojson/GeojsonBorders";
 
 export default {
     name: "MapChart",
@@ -86,10 +84,11 @@ export default {
         LGeoJson,
         LLayerGroup,
         LControl,
-        LFeatureGroup
+        LFeatureGroup,
+        LControlLayers
     },
-    props:{
-        year:{
+    props: {
+        year: {
             type: Number,
             default: 2009
         },
@@ -102,10 +101,13 @@ export default {
             default: ''
         }
     },
-    data(){
+    data() {
         return {
+            mapOptions: {
+                dragging: true,
+            },
             attempt: true,
-            bounds:[],
+            bounds: [],
             zoom: 7,
             iconWidth: 25,
             iconHeight: 40,
@@ -126,32 +128,50 @@ export default {
         }
     },
     computed: {
-        showCountry(){
-            for(let i in this.displayDetails){return false} return true
+        showCountry() {
+            for (let i in this.displayDetails) {
+                return false
+            }
+            return true
         },
         map() {
             return this.$refs.map;
         },
         options() {
             return {
-                onEachFeature: this.onEachFeatureFunction
+                onEachFeature: this.onEachFeatureFunction,
+                style: this.styleFunction,
             };
         },
         optionsDetails() {
             return {
-                // onEachFeature: this.onEachFeatureFunctionDetails
+                style: function () {
+                    return {
+                        color: "#1F5E4A",
+                        weight: 1,
+                        opacity: 1,
+                        fillColor: "#1F5E4A",
+                        fillOpacity: 0.5,
+                    }
+                },
+                onEachFeature: (feature, layer) => {
+                    console.log(feature.properties)
+                    // if (feature.properties && feature.properties.name) {
+                    //     layer.bindPopup(feature.properties.name, {closeButton: false, offset: L.point(0,0)});
+                    //     layer.on('mouseover', function() { layer.openPopup(); });
+                    //     layer.on('mouseout', function() { layer.closePopup(); });
+                    // }
+                }
             }
         },
         styleFunction() {
-            return () => {
-                return {
-                    weight: 2,
-                    color: "#242424",
-                    opacity: 0.3,
-                    fillColor: "#242424",
-                    fillOpacity: 1
-                };
-            };
+            return {
+                color: "#1F5E4A",
+                weight: 1,
+                opacity: 1,
+                fillColor: "#1F5E4A",
+                fillOpacity: 0.3,
+            }
         },
         onEachFeatureFunction() {
             if (!this.enableTooltip) {
@@ -160,7 +180,11 @@ export default {
             }
 
             return (feature, layer) => {
-
+                // if (feature.properties && feature.properties.name) {
+                //     layer.bindPopup(feature.properties.name, {closeButton: false, offset: L.point(0,0)});
+                //     layer.on('mouseover', function() { layer.openPopup(); });
+                //     layer.on('mouseout', function() { layer.closePopup(); });
+                // }
 
                 layer.on('mounted', () => {
                     this.setStyle({
@@ -176,13 +200,13 @@ export default {
         }
     },
     methods: {
-        test(e){
+        test(e) {
             this.$nextTick(() => {
                 this.bounds = e.getBounds()
             })
         },
         async toggleDetails(id) {
-            this.details[id] = await getDistrictsBorders(id)
+            this.details[id] = await useGeojsonBordersStore().getDistrictsBorders(id)
 
             if (Object.keys(this.displayDetails).length > 0) {
                 this.displayDetails = {}
@@ -196,7 +220,7 @@ export default {
     },
     async mounted() {
         // const country = await getTrash('country', 'cz')
-        const result = await getRegionsBorders()
+        const result = await useGeojsonBordersStore().getRegionsBorders()
 
         this.selectedRegion = {
             'name': 'Česká republika',
@@ -215,11 +239,14 @@ export default {
     },
     watch: {
         id() {
-            if(!this.attempt) return;
+            if (!this.attempt) return;
 
-            if(this.type === 'district') return;
+            if (this.type === 'district') return;
 
-            if(this.type === 'country') {this.displayDetails = {}; return}
+            if (this.type === 'country') {
+                this.displayDetails = {};
+                return
+            }
 
             this.toggleDetails(this.id)
         }

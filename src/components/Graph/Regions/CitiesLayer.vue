@@ -14,7 +14,7 @@
 
 <script>
 import PiechartMarker from "@/components/Graph/Charts/PiechartMarker";
-import {getGeographyWithTrashes} from "@/logics/api/geography/advanced";
+import {useGeographyStore} from "@/stores/Geography/GeographyStore";
 
 export default {
     name: "CitiesLayer",
@@ -45,7 +45,7 @@ export default {
     },
     methods: {
         async setTrashes(type, id, year) {
-            this.trashes = await getGeographyWithTrashes(type, id, year)
+            this.trashes = await useGeographyStore().getGeographyWithTrashes(type, id, year)
         }
     },
     watch: {
