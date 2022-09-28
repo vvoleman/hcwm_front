@@ -4,6 +4,7 @@ class FilterData {
 	currentFolder = null;
 	categories = [];
 	languages = [];
+	usedLanguage = null;
 
 	getDataObject() {
 		return {
@@ -11,6 +12,7 @@ class FilterData {
 			currentFolder: this.currentFolder,
 			categories: this.categories,
 			languages: this.languages,
+			usedLanguage: this.usedLanguage
 		}
 	}
 

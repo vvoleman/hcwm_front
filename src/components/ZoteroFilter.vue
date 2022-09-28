@@ -86,6 +86,7 @@ export default {
             filterData.languages = [...this.selectedLanguages]
             filterData.categories = [...this.selectedCategories]
             filterData.currentFolder = this.$router.currentRoute.value.fullPath
+            filterData.usedLanguage = this.$i18n.locale
             this.$emit('search', filterData)
         }
     },

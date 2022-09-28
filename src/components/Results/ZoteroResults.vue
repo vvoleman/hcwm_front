@@ -1,9 +1,9 @@
 <template>
     <div class="col-md-10 mx-auto">
+        <BreadcrumbsPath :breadcrumbs="breadcrumbs"/>
         <div class="results-block">
-            <BreadcrumbsPath/>
             <div v-if="!isLoading">
-                <div class="d-flex justify-content-center">
+                <div class="d-flex flex-wrap">
                     <div class="folder-block">
                         <ZoteroFolder
                             v-for="folder in folders"
@@ -18,7 +18,9 @@
                     />
                 </div>
             </div>
-            <SpinLoader class="loader" v-else></SpinLoader>
+            <div v-else class="center-flex">
+                <SpinLoader class="loader"></SpinLoader>
+            </div>
         </div>
         <RecentItems style="margin-top:20px"/>
     </div>
@@ -42,6 +44,10 @@ export default {
         items: Array,
         folders: Array,
         isLoading: Boolean,
+        breadcrumbs: {
+            type:Array,
+            default: () => []
+        }
     },
     computed: {
         currentLocale() {
@@ -62,6 +68,12 @@ export default {
 </script>
 
 <style scoped>
+.center-flex {
+    min-height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .results-block {
     margin-top: 20px;
     min-height: 500px;

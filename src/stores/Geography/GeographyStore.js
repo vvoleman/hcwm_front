@@ -74,7 +74,7 @@ export const useGeographyStore = defineStore('GeographyStore', {
 			this.names[type][id] = result['name']
 			return result['name']
 		},
-		getName(type, id) {
+		getName(type, id, alt = false) {
 			const allowed = ['country', 'region', 'district']
 
 			if (allowed.filter(x => x === type).length === 0) {
@@ -82,7 +82,7 @@ export const useGeographyStore = defineStore('GeographyStore', {
 				return {}
 			}
 
-			return this.cacheName(type, id)
+			return ((alt && type === 'district') ? 'ORP ' : '') + this.cacheName(type, id)
 		}
 		,
 		async getTrashSwitch(type, id) {
@@ -119,6 +119,7 @@ export const useGeographyStore = defineStore('GeographyStore', {
 
 			// const trashes = await getTrashesOfRegions(id)
 			const trashes = await this.getTrashSwitch(type, id)
+			console.log(trashes, geographies, this.ids[type] + '_id')
 			for (const geography of geographies) {
 				results.push({
 					name: geography.name,

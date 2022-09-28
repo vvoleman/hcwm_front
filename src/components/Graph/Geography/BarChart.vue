@@ -72,7 +72,12 @@ export default {
             datasets: [],
             labels: [],
             chartOptions: {
-                // animation: false,
+                duration: 0,
+                animation: {
+                    onComplete: () => {
+                        this.$emit('chart-ready')
+                    }
+                },
                 responsive: true,
                 maintainAspectRatio: false,
                 interaction: {
@@ -92,7 +97,7 @@ export default {
                         ticks: {
                             // Include a dollar sign in the ticks
                             callback: function (value) {
-                                return new Intl.NumberFormat(this.language, {maximumSignificantDigits:3,}).format(value) + ' t';
+                                return new Intl.NumberFormat(this.language, {maximumSignificantDigits: 3,}).format(value) + ' t';
                             }
                         }
                     }
@@ -106,8 +111,11 @@ export default {
                                 if (label) {
                                     label += ': ';
                                 }
-                                if (context.parsed.y!== null) {
-                                    label += new Intl.NumberFormat(this.language, { maximumSignificantDigits: 3, style: 'percent', }).format(context.parsed.y/this.sums[context.label])
+                                if (context.parsed.y !== null) {
+                                    label += new Intl.NumberFormat(this.language, {
+                                        maximumSignificantDigits: 3,
+                                        style: 'percent',
+                                    }).format(context.parsed.y / this.sums[context.label])
                                 }
                                 return label;
                             }
@@ -197,7 +205,7 @@ export default {
                 datasets: this.datasets
             }
         },
-        language(){
+        language() {
             return this.$i18n.locale
         }
     },

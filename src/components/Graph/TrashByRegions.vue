@@ -7,6 +7,7 @@
         <template #title>
             <h4>{{ $t('ui.graphs.by_regions.titles.map') }}</h4>
             <b class="subtitle">{{ selected.year }}</b>
+            <small v-if="!isReady" class="subtitle"><br>{{ $t('ui.graphs.loading') }}</small>
         </template>
         <template #body>
             <div class="col-md-12 map-container">
@@ -14,6 +15,7 @@
                     :year="selected.year"
                     :type="selected.type"
                     :id="selected.id"
+                    @ready="mapReady"
                 />
             </div>
         </template>
@@ -73,6 +75,7 @@ export default {
     },
     data() {
         return {
+            isReady: false,
             trashes: {},
             selected: {
                 type: '',
@@ -89,6 +92,7 @@ export default {
     },
     methods: {
         async handleGeographyUpdate(data) {
+            this.isReady = false;
             if (data.id === this.selected.id && data.year === this.selected.year) {
                 return
             }
@@ -99,6 +103,9 @@ export default {
         async refreshTrash(geographyType, id) {
             this.trashes = await useTrashStore().getTrash(geographyType, id)
             // this.selected.name =
+        },
+        mapReady() {
+            this.isReady = true
         }
     },
     async mounted() {

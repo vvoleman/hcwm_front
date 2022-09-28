@@ -4,6 +4,7 @@
         :marker="getCoords(region.coords)"
     >
         <div>
+            <div :id="region.id"></div>
             <Pie
                 :ref="region.id"
                 :chart-options="chartOptions"

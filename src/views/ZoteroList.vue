@@ -1,7 +1,7 @@
 <template>
     <div>
         <ZoteroFilter @search="search" />
-        <ZoteroResults :items="items" :folders="folders" :is-loading="isLoading"/>
+        <ZoteroResults :items="items" :folders="folders" :is-loading="isLoading" :breadcrumbs="breadcrumbs"/>
     </div>
 </template>
 
@@ -19,6 +19,7 @@ export default {
         return {
             items: [],
             folders: [],
+            breadcrumbs: [],
             isLoading: false
         }
     },
@@ -35,6 +36,7 @@ export default {
             if(response !== null){
                 this.items = response.items;
                 this.folders = response.folders;
+                this.breadcrumbs = response.breadcrumbs
             } else {
                 console.error('loadItems API error');
             }

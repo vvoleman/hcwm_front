@@ -1,13 +1,13 @@
 <template>
     <div>
         <div>
-            <!-- Make a checkbox with label that changes state of 'includeRegression'  -->
-            <label class="checkbox">
-                <input type="checkbox" v-model="includeRegression">
-                <span class="checkmark"></span>
-                <!-- Translate the label -->
-                {{ $t('ui.graphs.by_geography.include_regression') }}
-            </label>
+<!--            &lt;!&ndash; Make a checkbox with label that changes state of 'includeRegression'  &ndash;&gt;-->
+<!--            <label class="checkbox">-->
+<!--                <input type="checkbox" v-model="includeRegression">-->
+<!--                <span class="checkmark"></span>-->
+<!--                &lt;!&ndash; Translate the label &ndash;&gt;-->
+<!--                {{ $t('ui.graphs.by_geography.include_regression') }}-->
+<!--            </label>-->
         </div>
         <Line
             ref="moree"
@@ -78,8 +78,6 @@ export default {
     },
     mounted() {
         this.doTheMagic(this.trash)
-        let chart = this.$refs.moree.chart
-        console.log(chart)
     },
     data() {
         return {
@@ -88,6 +86,12 @@ export default {
             labels: [],
             hovering: false,
             chartOptions: {
+                animation: {
+                    duration: 0,
+                    onComplete: () => {
+                        this.$emit('chart-ready')
+                    }
+                },
                 legendCallback: function (chart) {
                     console.log(chart)
                     var legendHtml = [];
@@ -125,11 +129,7 @@ export default {
                 plugins: {
                     legend: {
                         display: true,
-                        position: 'bottom',
-                        title: {
-                            display: true,
-                            text: 'Test legend'
-                        },
+                        position: 'top',
                     },
                     tooltip: {
                         callbacks: {

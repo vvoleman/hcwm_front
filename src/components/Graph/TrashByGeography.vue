@@ -4,14 +4,13 @@
         <SelectGeography @update="handleSelectUpdate" @ready="handleReady" @loading="handleSelectLoading"/>
     </div>
     <!--    <h1>{{selected.loading}}, {{selected.type}} - {{selected.id}}</h1>-->
-    <spin-loader v-if="selected.loading"/>
     <div class="segment chart-box">
         <div class="title">
             <h4>{{ $t('ui.graphs.by_geography.titles.individual_types') }}</h4>
             <b class="subtitle">{{name}}</b>
         </div>
-        <spin-loader v-if="selected.loading"/>
-        <BarChart v-show="!selected.loading" class="chart" :trash="trashes"/>
+        <spin-loader v-show="!chartsLoaded.bar"/>
+        <BarChart @chart-ready="chartReady('bar')" class="chart" :trash="trashes" v-show="chartsLoaded.bar"/>
     </div>
 
     <div class="segment chart-box">
@@ -19,7 +18,8 @@
             <h4>{{ $t('ui.graphs.by_geography.titles.trend_types') }}</h4>
             <b class="subtitle">{{name}}</b>
         </div>
-        <LineChart v-if="trashes !== null && !selected.loading" class="chart" :trash="trashes"></LineChart>
+        <spin-loader v-show="!chartsLoaded.line"/>
+        <LineChart @chart-ready="chartReady('line')" v-if="trashes !== null && !selected.loading" class="chart" :trash="trashes" v-show="chartsLoaded.line"></LineChart>
     </div>
 
     <div class="segment chart-box" style="min-height: 0px" v-if="trashes !== null && !selected.loading">
@@ -27,9 +27,10 @@
             <h4>{{ $t('ui.graphs.by_geography.titles.table') }}</h4>
             <b class="subtitle">{{name}}</b>
         </div>
-        <div class="scroll-table">
-            <DataTable class="data-table" :trashes="trashes" :name="name"/>
+        <div class="scroll-table" v-show="isReady">
+            <DataTable :trashes="trashes" :name="name" idTable="geography_data"/>
         </div>
+        <spin-loader v-show="!isReady"></spin-loader>
     </div>
 
     <SegmentWrapper>
@@ -77,6 +78,10 @@ export default {
                 type: '',
                 id: ''
             },
+            chartsLoaded: {
+                bar: false,
+                line: false
+            },
             trashes: null,
             isReady: false
         }
@@ -101,6 +106,13 @@ export default {
             }
         },
         handleSelectLoading(data) {
+            if(data) {
+                let keys = Object.keys(this.chartsLoaded)
+                for (const key of keys) {
+                    this.chartsLoaded[key] = false;
+                }
+            }
+
             this.selected.loading = data
         },
         async handleReady() {
@@ -108,11 +120,18 @@ export default {
 
             this.isReady = true
             this.trashes = await useTrashStore().getTrash(this.selected.type, this.selected.id)
+        },
+        chartReady(type) {
+            if (!this.isReady) {
+                return
+            }
+
+            this.chartsLoaded[type] = true
         }
     },
     computed: {
         name() {
-            return useGeographyStore().getName(this.selected.type, this.selected.id)
+            return useGeographyStore().getName(this.selected.type, this.selected.id, true)
         },
         type() {
             return this.selected.type

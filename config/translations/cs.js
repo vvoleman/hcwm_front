@@ -10,6 +10,7 @@ const translations = {
 		},
 		"items": {
 			"root":"Vše",
+			"no_results": "Žádné výsledky",
 			"translate": "Přeložit",
 			'select_language': 'Vybert jazyk k překladu',
 			'recent_items': 'Poslední přidané články'
@@ -26,8 +27,8 @@ const translations = {
 				"no_district": "-- Nevybráno --",
 				"titles": {
 					"main": "Odpady na vybraném území",
-					"individual_types": "Podíl jednotlivých typů odpadů na celkové produkci na vybraném území (2009 - 2019)",
-					"trend_types": "Trend produkce jednotlivých typů odpadů (2009 - 2019)",
+					"individual_types": "Podíl jednotlivých typů odpadů z porodnické péče, z diagnostiky, z léčení nebo prevence nemocí lidí na celkové produkci na vybraném území (2009–2019)",
+					"trend_types": "Trend produkce jednotlivých typů odpadů z porodnické péče, z diagnostiky, z léčení nebo prevence nemocí lidí (2009–2019)",
 					"table": "Souhrná data"
 				},
 				'include_regression': 'Zahrnout lineární regresi',
@@ -35,7 +36,7 @@ const translations = {
 			"by_regions": {
 				"titles": {
 					"main":"Odpady ve vybraném roce",
-					"map": "Podíl jednotlivých typů odpadů na produkci ve vybraném roce podle území",
+					"map": "Podíl jednotlivých typů odpadů z porodnické péče, z diagnostiky, z léčení nebo prevence nemocí lidí na produkci ve vybraném roce podle území",
 					"table": "Souhrná data",
 					"description": "Popis dat"
 				},
@@ -53,6 +54,7 @@ const translations = {
 				"F180110": "F180110",
 				"others": "Ostatní"
 			},
+			"loading": "Načítání",
 			"undefined_option": "-- Nedefinováno --",
 			"choose_district": "Výběr okresu",
 			"choose_year": "Výběr roku",

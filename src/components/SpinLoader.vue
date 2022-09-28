@@ -1,5 +1,7 @@
 <template>
-    <div class="lds-dual-ring"></div>
+    <div class="center-flex">
+        <div class="lds-dual-ring"></div>
+    </div>
 </template>
 
 <script>
@@ -21,8 +23,8 @@ export default {
     height: 64px;
     margin: 8px;
     border-radius: 50%;
-    border: 6px solid #666666;
-    border-color: #666666 transparent #666666 transparent;
+    border: 6px solid var(--main-color-dark);
+    border-color: var(--main-color-dark) transparent var(--main-color-dark) transparent;
     animation: lds-dual-ring 1.2s linear infinite;
 }
 @keyframes lds-dual-ring {
@@ -33,5 +35,10 @@ export default {
         transform: rotate(360deg);
     }
 }
-
+.center-flex {
+    min-height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 </style>

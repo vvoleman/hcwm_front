@@ -1,5 +1,6 @@
 <template>
-    <table class="table table-hover">
+    <button @click="exportTable">Exportovat</button>
+    <table class="table table-hover" :id="idTable">
         <thead>
         <tr>
             <th>{{ name }}</th>
@@ -7,8 +8,8 @@
                 <th>{{ $t('ui.graphs.by_geography.amount') }}<br>{{ year }}</th>
                 <th>{{ $t('ui.graphs.by_geography.fraction') }}<br>{{ year }}</th>
             </template>
-            <th>{{ $t('ui.graphs.by_geography.amount') }}<br>{{ $t('ui.graphs.by_geography.total') }}</th>
-            <th>{{ $t('ui.graphs.by_geography.fraction') }}<br>{{ $t('ui.graphs.by_geography.total') }}</th>
+            <th>{{ $t('ui.graphs.by_geography.amount') }}&nbsp;<br>{{ $t('ui.graphs.by_geography.total') }}</th>
+            <th>{{ $t('ui.graphs.by_geography.fraction') }}&nbsp;<br>{{ $t('ui.graphs.by_geography.total') }}</th>
 
         </tr>
         </thead>
@@ -39,6 +40,7 @@
 
 <script>
 import {prettify} from "@/logics/helpers";
+import {exportTableToExcel} from "@/logics/data/export";
 
 export default {
     name: "DataTable",
@@ -51,6 +53,10 @@ export default {
             type: String,
             required: true
         },
+        idTable: {
+            type: String,
+            required: true
+        }
     },
     data(){
         return {
@@ -85,7 +91,9 @@ export default {
         prettify(value, suffix = ' t', precision = 2) {
             return prettify(value, suffix, precision)
         },
-
+        exportTable(){
+            exportTableToExcel(document.getElementById(this.idTable))
+        },
         calculateTrashSums(trashes) {
             let sums = {}
 

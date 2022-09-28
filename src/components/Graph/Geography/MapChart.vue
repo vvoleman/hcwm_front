@@ -6,6 +6,8 @@
         v-model:zoom="zoom"
         :center="center"
         :bounds="bounds"
+        :min-zoom="7"
+        :max-zoom="10"
     >
         <l-control>
             <TrashLegend/>
@@ -155,7 +157,6 @@ export default {
                     }
                 },
                 onEachFeature: (feature, layer) => {
-                    console.log(feature.properties)
                     // if (feature.properties && feature.properties.name) {
                     //     layer.bindPopup(feature.properties.name, {closeButton: false, offset: L.point(0,0)});
                     //     layer.on('mouseover', function() { layer.openPopup(); });
@@ -202,6 +203,7 @@ export default {
     methods: {
         test(e) {
             this.$nextTick(() => {
+                console.log(e.getBounds())
                 this.bounds = e.getBounds()
             })
         },
@@ -212,7 +214,7 @@ export default {
                 this.displayDetails = {}
             }
             this.displayDetails[id] = null;
-
+            this.$emit('ready')
         },
         canDisplayDetail(id) {
             return this.displayDetails[id] !== undefined;
@@ -236,6 +238,7 @@ export default {
             return
         }
         this.geojson = result;
+        this.$emit('ready')
     },
     watch: {
         id() {
@@ -245,6 +248,7 @@ export default {
 
             if (this.type === 'country') {
                 this.displayDetails = {};
+                this.$emit('ready')
                 return
             }
 

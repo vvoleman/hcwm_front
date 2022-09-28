@@ -33,10 +33,10 @@ export default {
         return {
             trashes: {},
             default: {
-                width: 150,
+                width: 50,
                 height: 50
             },
-            width: 150,
+            width: 50,
             height: 50,
         }
     },

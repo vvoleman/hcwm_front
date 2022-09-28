@@ -17,6 +17,7 @@
     "chart.js": "^3.7.1",
     "click-outside-vue3": "^4.0.1",
     "core-js": "^3.8.3",
+    "leaflet-spin": "^1.1.2",
     "pinia": "^2.0.21",
     "regression": "^2.0.1",
     "vue": "^3.2.13",
@@ -25,7 +26,8 @@
     "vue-final-modal": "^3.4.4",
     "vue-i18n": "^9.1.10",
     "vue-leaflet-custom-marker": "^1.0.0",
-    "vue-router": "^4.0.15"
+    "vue-router": "^4.0.15",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.18.12/xlsx-0.18.12.tgz"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

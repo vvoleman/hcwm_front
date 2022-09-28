@@ -11,7 +11,7 @@
         />
     </div>
     <div v-else class="text-center">
-        <b>Žádné výsledky</b>
+        <b>{{ $t('ui.items.no_results') }}</b>
     </div>
 </template>
 

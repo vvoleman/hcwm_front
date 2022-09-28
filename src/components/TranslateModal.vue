@@ -17,7 +17,7 @@
                     style="margin-left: 5px">{{ option.name }}</span>
                 </template>
             </multiselect>
-            <button @click="run" class="btn btn-primary" style="width: 100%;margin-top:10px">Přeložit</button>
+            <button @click="run" class="btn btn-custom" style="width: 100%;margin-top:10px">Přeložit</button>
         </div>
     </transition>
 </template>
@@ -64,5 +64,13 @@ export default {
     padding: 15px;
     background: white;
     box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.2);
+}
+.btn-custom {
+    background: var(--main-color-dark);
+    color: white;
+}
+.btn-custom:hover {
+    background: var(--main-color-darkest);
+    color:white;
 }
 </style>

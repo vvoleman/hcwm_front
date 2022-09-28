@@ -1,9 +1,9 @@
 <template>
     <div class="breadcrumbs">
         <router-link to="/">{{ $t('ui.items.root') }}</router-link>
-        <span v-for="(part,i) in parts" :key="part.url">
-            &raquo; <router-link v-if="i !== parts.length-1" :to="part.url">{{ part.text }}</router-link>
-            <span v-else>{{ part.text }}</span>
+        <span v-for="(part,i) in breadcrumbs" :key="part.url">
+            &raquo; <router-link v-if="i !== breadcrumbs.length-1" :to="'/'+part.url[lang]">{{ part.name[lang] }}</router-link>
+            <span v-else>{{ part.name[lang] }}</span>
         </span>
     </div>
 </template>
@@ -11,9 +11,10 @@
 <script>
 export default {
     name: "BreadcrumbsPath",
-    data(){
-        return {
-            parts: []
+    props: {
+        breadcrumbs: {
+            type: Array,
+            default: () => []
         }
     },
     methods: {
@@ -44,11 +45,16 @@ export default {
         }
     },
     mounted() {
-        this.prepareParts()
+        // this.prepareParts()
     },
     watch:{
         $route (){
             this.prepareParts()
+        }
+    },
+    computed: {
+        lang() {
+            return this.$i18n.locale
         }
     }
 }
