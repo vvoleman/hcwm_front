@@ -15,7 +15,8 @@
         <l-control-layers></l-control-layers>
         <l-tile-layer
             :name="$t('ui.graphs.by_regions.base_layer')"
-            layer-type="base"
+            layer-type="overlay"
+            :visible="false"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         ></l-tile-layer>
         <l-layer-group v-if="showCountry">

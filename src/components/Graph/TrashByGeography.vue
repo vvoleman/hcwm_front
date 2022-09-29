@@ -27,7 +27,7 @@
             <h4>{{ $t('ui.graphs.by_geography.titles.table') }}</h4>
             <b class="subtitle">{{name}}</b>
         </div>
-        <div class="scroll-table" v-show="isReady">
+        <div v-show="isReady">
             <DataTable :trashes="trashes" :name="name" idTable="geography_data"/>
         </div>
         <spin-loader v-show="!isReady"></spin-loader>

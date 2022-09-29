@@ -86,7 +86,6 @@ export const useTrashStore = defineStore('TrashStore', {
 					this[type][areaId] = area.trashes
 					result[areaId] = area.trashes
 				}
-				return result
 			} else {
 				result = null;
 			}

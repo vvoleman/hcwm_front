@@ -54,6 +54,7 @@ const translations = {
 				"F180110": "F180110",
 				"others": "Ostatní"
 			},
+			"export_btn": "Exportovat tabulku",
 			"loading": "Načítání",
 			"undefined_option": "-- Nedefinováno --",
 			"choose_district": "Výběr okresu",

@@ -1,10 +1,11 @@
 <template>
+    <h1>Ted</h1>
     <custom-marker
+        v-if="region !== null"
         :map="map"
         :marker="getCoords(region.coords)"
     >
         <div>
-            <div :id="region.id"></div>
             <Pie
                 :ref="region.id"
                 :chart-options="chartOptions"
@@ -12,6 +13,7 @@
                 :width="width"
                 :height="height"
             />
+            <div class="tooltip" :id="region.id"></div>
         </div>
     </custom-marker>
 </template>
@@ -40,22 +42,84 @@ export default {
             chartOptions: {
                 responsive: true,
                 maintainAspectRatio: false,
-                layout: {
-                    padding: {
-                        left: 0,
-                        right: 4,
-                        top: 0,
-                        bottom: 0
-                    }
-                },
                 plugins: {
                     legend: {
                         display: false,
                         position: 'bottom'
                     },
                     tooltip: {
+                        enabled: false,
                         caretSize: 0,
                         position: "nearest",
+                        // external: (context) => {
+                        //     // Tooltip Element
+                        //     let tooltipEl = document.getElementById(this.region.id);
+                        //     console.log(tooltipEl)
+                        //
+                        //     // Create element on first render
+                        //     if (!tooltipEl) {
+                        //         tooltipEl = document.createElement('div');
+                        //         tooltipEl.id = this.region.id;
+                        //         document.body.appendChild(tooltipEl);
+                        //     }
+                        //
+                        //     tooltipEl.innerHTML = '<table></table>';
+                        //
+                        //     // Hide if no tooltip
+                        //     const tooltipModel = context.tooltip;
+                        //     if (tooltipModel.opacity === 0) {
+                        //         tooltipEl.style.opacity = 0;
+                        //         return;
+                        //     }
+                        //
+                        //     // Set caret Position
+                        //     tooltipEl.classList.remove('above', 'below', 'no-transform');
+                        //     if (tooltipModel.yAlign) {
+                        //         tooltipEl.classList.add(tooltipModel.yAlign);
+                        //     } else {
+                        //         tooltipEl.classList.add('no-transform');
+                        //     }
+                        //
+                        //     function getBody(bodyItem) {
+                        //         return bodyItem.lines;
+                        //     }
+                        //
+                        //     // Set Text
+                        //     if (tooltipModel.body) {
+                        //         const titleLines = tooltipModel.title || [];
+                        //         const bodyLines = tooltipModel.body.map(getBody);
+                        //
+                        //         let innerHtml = '<thead>';
+                        //
+                        //         titleLines.forEach(function(title) {
+                        //             innerHtml += '<tr><th>' + title + '</th></tr>';
+                        //         });
+                        //         innerHtml += '</thead><tbody>';
+                        //
+                        //         bodyLines.forEach(function(body, i) {
+                        //             const colors = tooltipModel.labelColors[i];
+                        //             let style = 'background:' + colors.backgroundColor;
+                        //             style += '; border-color:' + colors.borderColor;
+                        //             style += '; border-width: 2px';
+                        //             const span = '<span style="' + style + '"></span>';
+                        //             innerHtml += '<tr><td>' + span + body + '</td></tr>';
+                        //         });
+                        //         innerHtml += '</tbody>';
+                        //
+                        //         let tableRoot = tooltipEl.querySelector('table');
+                        //         tableRoot.innerHTML = innerHtml;
+                        //     }
+                        //
+                        //     const position = context.chart.canvas.getBoundingClientRect();
+                        //
+                        //     // Display, position, and set styles for font
+                        //     tooltipEl.style.opacity = 1;
+                        //     tooltipEl.style.position = 'absolute';
+                        //     tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
+                        //     tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
+                        //     tooltipEl.style.padding = tooltipModel.padding + 'px ' + tooltipModel.padding + 'px';
+                        //     tooltipEl.style.pointerEvents = 'none';
+                        // },
                         callbacks: {
                             label: (context)=>{
                                 return `${this.$t('ui.graphs.trashes.'+(context.label))} - ${getUnit(context.raw)}`
@@ -65,7 +129,7 @@ export default {
                                 let arr = [];
                                 arr.push(((context.raw / this.sum) * 100).toFixed(2) + '%')
                                 return arr;
-                            }
+                            },
                         }
                     },
                 }
@@ -132,4 +196,12 @@ export default {
 </script>
 
 <style scoped>
+.tooltip {
+    left: 0;
+    padding:30px;
+    background: black;
+    color:white;
+    position:absolute;
+    z-index: 5;
+}
 </style>

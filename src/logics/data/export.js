@@ -1,11 +1,11 @@
 import * as XLSX from "xlsx";
 
-function exportTableToExcel(table, type = 'xlsx'){
+function exportTableToExcel(table, name, type = 'xlsx'){
 	var file = XLSX.utils.table_to_book(table, {sheet: "sheet1"});
 
 	XLSX.write(file, { bookType: type, bookSST: true, type: 'base64' });
 
-	XLSX.writeFile(file, 'file.' + type);
+	XLSX.writeFile(file, `${name}.${type}`);
 
 	// var downloadLink;
 	// var dataType = 'application/vnd.ms-excel';

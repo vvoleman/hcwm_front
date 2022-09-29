@@ -27,7 +27,7 @@
         </template>
         <template #body>
             <div class="scroll-table">
-                <data-table v-bind="selected" :year="selected.year"/>
+                <data-table v-bind="selected" :year="selected.year" id-table="regionsTable"/>
             </div>
         </template>
     </SegmentWrapper>

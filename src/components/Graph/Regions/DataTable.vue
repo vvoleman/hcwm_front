@@ -1,5 +1,8 @@
 <template>
-    <table class="table table-hover">
+    <div class="d-md-flex justify-content-end flex-wrap">
+        <button @click="exportTable" class="btn-export" :aria-label="$t('ui.graphs.export_btn')">Exportovat</button>
+    </div>
+    <table class="table table-hover" :id="idTable">
         <thead>
         <tr>
             <th class="v-center">{{name}}</th>
@@ -39,6 +42,7 @@
 <script>
 import {prettify} from "@/logics/helpers";
 import {useGeographyStore} from "@/stores/Geography/GeographyStore";
+import {exportTableToExcel} from "@/logics/data/export";
 
 export default {
     name: "DataTable",
@@ -58,6 +62,10 @@ export default {
         year: {
             type: Number,
             default: 2009
+        },
+        idTable: {
+            type: String,
+            required: true
         }
     },
     beforeCreate() {
@@ -87,6 +95,9 @@ export default {
                 return false
             }
             return true
+        },
+        exportTable(){
+            exportTableToExcel(document.getElementById(this.idTable), 'odpady_' + this.year)
         },
         prettify(value, suffix = ' t', precision = 2) {
             return prettify(value, suffix, precision)

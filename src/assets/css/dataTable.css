@@ -35,3 +35,15 @@ th:first-of-type{
 td:nth-child(2n+1),th:nth-child(2n+1), td {
   border-right: 3px solid black;
 }
+.btn-export {
+    background: var(--main-color-dark);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 5px;
+    cursor: pointer;
+}
+.btn-export:hover {
+  background: var(--main-color-darkest);
+}

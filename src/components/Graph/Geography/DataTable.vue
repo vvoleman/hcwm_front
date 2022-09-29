@@ -1,30 +1,33 @@
 <template>
-    <button @click="exportTable">Exportovat</button>
-    <table class="table table-hover" :id="idTable">
-        <thead>
-        <tr>
-            <th>{{ name }}</th>
-            <template v-for="year in years" :key="year">
-                <th>{{ $t('ui.graphs.by_geography.amount') }}<br>{{ year }}</th>
-                <th>{{ $t('ui.graphs.by_geography.fraction') }}<br>{{ year }}</th>
-            </template>
-            <th>{{ $t('ui.graphs.by_geography.amount') }}&nbsp;<br>{{ $t('ui.graphs.by_geography.total') }}</th>
-            <th>{{ $t('ui.graphs.by_geography.fraction') }}&nbsp;<br>{{ $t('ui.graphs.by_geography.total') }}</th>
+    <div class="d-md-flex justify-content-end flex-wrap">
+        <button @click="exportTable" class="btn-export" :aria-label="$t('ui.graphs.export_btn')">Exportovat</button>
+    </div>
+    <div class="scroll-table">
+        <table class="table table-hover" :id="idTable">
+            <thead>
+            <tr>
+                <th>{{ name }}</th>
+                <template v-for="year in years" :key="year">
+                    <th>{{ $t('ui.graphs.by_geography.amount') }}<br>{{ year }}</th>
+                    <th>{{ $t('ui.graphs.by_geography.fraction') }}<br>{{ year }}</th>
+                </template>
+                <th>{{ $t('ui.graphs.by_geography.amount') }}&nbsp;<br>{{ $t('ui.graphs.by_geography.total') }}</th>
+                <th>{{ $t('ui.graphs.by_geography.fraction') }}&nbsp;<br>{{ $t('ui.graphs.by_geography.total') }}</th>
 
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-for="(trash, key) in trashes" :key="key">
-            <td>{{ $t(`ui.graphs.trashes.${key}`) }}</td>
-            <template v-for="(value,year) in trash" :key="year">
-                <td>{{prettify(value)}}</td>
-                <td>{{prettify(value/formatted[year]*100, '%')}}</td>
-            </template>
-            <td>{{prettify(trashSums[key])}}</td>
-            <td>{{prettify(trashSums[key]/totalSum*100, '%')}}</td>
-        </tr>
-        </tbody>
-        <tfoot>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="(trash, key) in trashes" :key="key">
+                <td>{{ $t(`ui.graphs.trashes.${key}`) }}</td>
+                <template v-for="(value,year) in trash" :key="year">
+                    <td>{{prettify(value)}}</td>
+                    <td>{{prettify(value/formatted[year]*100, '%')}}</td>
+                </template>
+                <td>{{prettify(trashSums[key])}}</td>
+                <td>{{prettify(trashSums[key]/totalSum*100, '%')}}</td>
+            </tr>
+            </tbody>
+            <tfoot>
             <tr>
                 <td>{{ $t('ui.graphs.by_geography.total') }}</td>
                 <template v-for="(value, year) in formatted" :key="year">
@@ -34,8 +37,9 @@
                 <td>{{prettify(totalSum)}}</td>
                 <td>100%</td>
             </tr>
-        </tfoot>
-    </table>
+            </tfoot>
+        </table>
+    </div>
 </template>
 
 <script>
@@ -92,7 +96,7 @@ export default {
             return prettify(value, suffix, precision)
         },
         exportTable(){
-            exportTableToExcel(document.getElementById(this.idTable))
+            exportTableToExcel(document.getElementById(this.idTable), 'odpady_' + this.name.toLowerCase())
         },
         calculateTrashSums(trashes) {
             let sums = {}
