@@ -28,7 +28,6 @@ export const useDistrictStore = defineStore('DistrictStore', {
 			if(this.districts[regionId] === undefined || Object.keys(this.districts[regionId]).length === 0) {
 				await this.loadOrAwait(regionId)
 			}
-			console.log(this.districts)
 			if(this.districts[regionId] !== undefined) {
 				return this.districts[regionId]
 			}

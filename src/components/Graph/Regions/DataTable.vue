@@ -1,11 +1,20 @@
 <template>
-    <div class="d-md-flex justify-content-end flex-wrap">
+    <div class="d-md-flex flex-wrap"
+         :class="{'justify-content-between':areaSelected.length > 0, 'justify-content-end': areaSelected.length === 0}">
+        <div v-if="areaSelected != null && areaSelected.length > 0">
+            <button @click="cancelSelection" class="btn-export">
+                {{ $t('ui.graphs.cancel_selection_btn') }}
+            </button>
+            <button @click="changeOnlySelected" class="btn-export">
+                {{ $t('ui.graphs.cancel_selection_btn') }}
+            </button>
+        </div>
         <button @click="exportTable" class="btn-export" :aria-label="$t('ui.graphs.export_btn')">Exportovat</button>
     </div>
     <table class="table table-hover" :id="idTable">
         <thead>
         <tr>
-            <th class="v-center">{{name}}</th>
+            <th class="v-center">{{ name }}</th>
             <template v-for="trash in trashTypes" :key="trash">
                 <th>{{ $t('ui.graphs.by_geography.amount') }}<br>{{ trash }}</th>
                 <th>{{ $t('ui.graphs.by_geography.fraction') }}<br>{{ trash }}</th>
@@ -15,13 +24,13 @@
         </tr>
         </thead>
         <tbody>
-        <tr v-for="(region, key) in trashes" :key="key">
+        <tr v-for="(region, key) in filteredData" :key="key" :class="{'selected': isSelected(region.id)}">
             <td class="name">{{ region.name }}</td>
             <template v-for="(value,key) in region.trashes.records" :key="key">
                 <td>{{ prettify(value) }}</td>
                 <td>{{ prettify(value / trashSums[key] * 100, '%') }}</td>
             </template>
-            <td>{{prettify(region.trashes.sum)}}</td>
+            <td>{{ prettify(region.trashes.sum) }}</td>
             <td>{{ prettify(region.trashes.sum / totalSum * 100, '%') }}</td>
         </tr>
         </tbody>
@@ -32,7 +41,7 @@
                 <td>{{ prettify(sumOfType(trash)) }}</td>
                 <td>{{ prettify(percSumOfType(trash), '%') }}</td>
             </template>
-            <td>{{prettify(totalSum,' t')}}</td>
+            <td>{{ prettify(totalSum, ' t') }}</td>
             <td>100%</td>
         </tr>
         </tfoot>
@@ -66,6 +75,10 @@ export default {
         idTable: {
             type: String,
             required: true
+        },
+        areaSelected: {
+            type: Array,
+            default: () => []
         }
     },
     beforeCreate() {
@@ -77,10 +90,28 @@ export default {
         return {
             trashes: [],
             trashTypes: [],
-            trashSums: []
+            trashSums: [],
+            adjustedSelection: {},
+            showOnlySelected: false,
         }
     },
     methods: {
+        changeOnlySelected() {
+            this.showOnlySelected = !this.showOnlySelected
+        },
+        cancelSelection() {
+            this.$emit('cancelSelection', null)
+        },
+        adjustSelection() {
+            let adjusted = {}
+            for (const area of this.areaSelected.values()) {
+                adjusted[area.id] = area
+            }
+            this.adjustedSelection = adjusted
+        },
+        isSelected(id) {
+            return !!this.adjustedSelection[id]
+        },
         async loadTrashes() {
             let id = this.type === 'district' ? this.parentId : this.id
             this.trashes = await useGeographyStore().getGeographyWithTrashes(this.type, id, this.year)
@@ -96,7 +127,7 @@ export default {
             }
             return true
         },
-        exportTable(){
+        exportTable() {
             exportTableToExcel(document.getElementById(this.idTable), 'odpady_' + this.year)
         },
         prettify(value, suffix = ' t', precision = 2) {
@@ -139,13 +170,19 @@ export default {
     computed: {
         totalSum() {
             let sum = 0;
-            for (const type of Object.keys(this.trashSums)) {
-                sum += this.trashSums[type]
+            for (const region of this.filteredData) {
+                sum += region.trashes.sum
             }
             return sum
         },
         name() {
             return useGeographyStore().getName(this.type, this.id)
+        },
+        filteredData() {
+            let ids = this.areaSelected.map(area => area.id)
+            return this.trashes.filter((region) => {
+                return ids.includes(region.id) || !this.showOnlySelected
+            })
         }
     },
     watch: {
@@ -154,6 +191,9 @@ export default {
         },
         year() {
             this.loadTrashes()
+        },
+        areaSelected() {
+            this.adjustSelection()
         }
     }
 }
@@ -162,7 +202,15 @@ export default {
 <style scoped>
 @import "@/assets/css/dataTable.css";
 
-.v-center{
+.v-center {
     vertical-align: middle;
+}
+
+.selected {
+    background-color: var(--main-color-light);
+}
+
+.selected .name {
+    background-color: inherit;
 }
 </style>

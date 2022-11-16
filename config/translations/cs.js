@@ -55,6 +55,7 @@ const translations = {
 				"others": "Ostatní"
 			},
 			"export_btn": "Exportovat tabulku",
+			"cancel_selection_btn": "Zrušit označení",
 			"loading": "Načítání",
 			"undefined_option": "-- Nedefinováno --",
 			"choose_district": "Výběr okresu",

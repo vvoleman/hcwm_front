@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="border">
         <PiechartMarker
             v-for="region in trashes"
             :key="region.id"
@@ -66,5 +66,4 @@ export default {
 </script>
 
 <style scoped>
-
 </style>

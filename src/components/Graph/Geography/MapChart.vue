@@ -6,8 +6,8 @@
         v-model:zoom="zoom"
         :center="center"
         :bounds="bounds"
-        :min-zoom="7"
-        :max-zoom="10"
+        :max-zoom="zooms[type].max"
+        :min-zoom="zooms[type].min"
     >
         <l-control>
             <TrashLegend/>
@@ -19,7 +19,8 @@
             :visible="false"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         ></l-tile-layer>
-        <l-layer-group v-if="showCountry">
+        <l-feature-group v-if="showCountry" @ready="setBounds">
+            <div class="border-danger">
             <l-geo-json
                 v-for="record in geojson"
                 :key="record.id"
@@ -27,18 +28,21 @@
                 :options="options"
                 :options-style="styleFunction"
             />
-            <CitiesLayer
-                :zoom="zoom"
-                :map="map"
-                :year="year"
-                :type="type"
-                :id="id"
-            />
-        </l-layer-group>
+            </div>
+            <div>
+                <CitiesLayer
+                    :zoom="zoom"
+                    :map="map"
+                    :year="year"
+                    :type="type"
+                    :id="id"
+                />
+            </div>
+        </l-feature-group>
         <div v-if="attempt">
             <l-feature-group
                 ref="feature"
-                @ready="test"
+                @ready="setBounds"
                 v-for="(value, key) in details"
                 :key="key">
                 <div v-if="canDisplayDetail(key)">
@@ -49,13 +53,13 @@
                         :options="optionsDetails"
                         :geojson="record"
                     />
-                                    <CitiesLayer
-                                        :zoom="zoom"
-                                        :map="map"
-                                        :year="year"
-                                        :type="type"
-                                        :id="id"
-                                    />
+                    <CitiesLayer
+                        :zoom="zoom"
+                        :map="map"
+                        :year="year"
+                        :type="type"
+                        :id="id"
+                    />
                 </div>
 
 
@@ -69,11 +73,23 @@
 import "leaflet/dist/leaflet.css"
 
 import TrashLegend from "@/components/Graph/TrashLegend";
-import {LControl, LGeoJson, LLayerGroup, LMap, LMarker, LTileLayer, LFeatureGroup, LControlLayers} from "@vue-leaflet/vue-leaflet";
+import {
+    LControl,
+    LGeoJson,
+    LLayerGroup,
+    LMap,
+    LMarker,
+    LTileLayer,
+    LFeatureGroup,
+    LControlLayers
+} from "@vue-leaflet/vue-leaflet";
 import CitiesLayer from "@/components/Graph/Regions/CitiesLayer";
-import {latLng} from "leaflet";
+import {latLngBounds, latLng} from "leaflet";
 import {useGeojsonBordersStore} from "@/stores/Geojson/GeojsonBorders";
-
+let originColor = {
+    color: "#1F5E4A",
+    opacity: 0.5,
+}
 export default {
     name: "MapChart",
     components: {
@@ -102,12 +118,25 @@ export default {
         id: {
             type: String,
             default: ''
-        }
+        },
+        selectedAreasIds: {
+            type: Array,
+            default: () => []
+        },
     },
     data() {
         return {
             mapOptions: {
                 dragging: true,
+            },
+            maxBounds: latLngBounds(
+                latLng(48.48225286612173, 11.620001806296331),
+                latLng(51.008241453210516, 19.935055736755313)
+            ),
+            zooms: {
+                region: {min: 8, max: 12},
+                country: {min: 7, max: 8},
+                '': {min: 7, max: 8}
             },
             attempt: true,
             bounds: [],
@@ -131,6 +160,9 @@ export default {
         }
     },
     computed: {
+        zoomType() {
+            return this.zooms[this.type];
+        },
         showCountry() {
             for (let i in this.displayDetails) {
                 return false
@@ -158,11 +190,11 @@ export default {
                     }
                 },
                 onEachFeature: (feature, layer) => {
-                    // if (feature.properties && feature.properties.name) {
-                    //     layer.bindPopup(feature.properties.name, {closeButton: false, offset: L.point(0,0)});
-                    //     layer.on('mouseover', function() { layer.openPopup(); });
-                    //     layer.on('mouseout', function() { layer.closePopup(); });
-                    // }
+                    if (feature.properties && feature.properties.name) {
+                         layer.bindPopup(feature.properties.name, {closeButton: false, offset: L.point(0,0)});
+                         layer.on('mouseover', function() { layer.openPopup(); });
+                         layer.on('mouseout', function() { layer.closePopup(); });
+                    }
                 }
             }
         },
@@ -182,29 +214,42 @@ export default {
             }
 
             return (feature, layer) => {
-                // if (feature.properties && feature.properties.name) {
-                //     layer.bindPopup(feature.properties.name, {closeButton: false, offset: L.point(0,0)});
-                //     layer.on('mouseover', function() { layer.openPopup(); });
-                //     layer.on('mouseout', function() { layer.closePopup(); });
-                // }
+                if (feature.properties && feature.properties.name) {
+                    layer.on('click', ()=>{
+                        this.$emit('geography-selected', feature.properties.id)
+                    })
+                    layer.bindPopup(feature.properties.name, {closeButton: false, offset: L.point(0, -30)});
+                    layer.on('mouseover', function () {
+                        // change background color of layer to indicate mouseover to slightly darker
+                        layer.setStyle({
+                            fillOpacity: .7,
+                        });
+                        //layer.openPopup();
+                    });
+                    layer.on('mouseout', function () {
+                        // change background color of layer to indicate mouseover to slightly darker
+                        layer.setStyle({
+                            fillOpacity: .3,
+                        });
+                    });
+                    layer.on('mouseleave', function () {
+                        // change background color back
+                        layer.closePopup();
+                    });
+                }
 
                 layer.on('mounted', () => {
                     this.setStyle({
                         fillColor: '#ff0000',
                         color: '#ff0000'
                     });
-                    layer.bindTooltip(
-                        `<b>${feature.properties.name}</b>`,
-                        {permanent: false, sticky: true}
-                    );
                 })
             };
         }
     },
     methods: {
-        test(e) {
+        setBounds(e) {
             this.$nextTick(() => {
-                console.log(e.getBounds())
                 this.bounds = e.getBounds()
             })
         },

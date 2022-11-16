@@ -68,7 +68,6 @@ export default {
                         fillOpacity: 0.3,
                     }
                 }).addTo(this.map)
-                console.log(item.properties)
                 let coords = item.properties.coords
                 var marker = L.marker(new L.LatLng(coords.latitude, coords.longitude), { title: item.properties.name });
                 markers.addLayer(marker)

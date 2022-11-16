@@ -119,7 +119,6 @@ export const useGeographyStore = defineStore('GeographyStore', {
 
 			// const trashes = await getTrashesOfRegions(id)
 			const trashes = await this.getTrashSwitch(type, id)
-			console.log(trashes, geographies, this.ids[type] + '_id')
 			for (const geography of geographies) {
 				results.push({
 					name: geography.name,

@@ -179,7 +179,6 @@ export default {
         async selectedDistrict() {
 
             if (this.selected.region === "") return;
-            console.log(this.selected)
             this.notifyOnChange('selectedDistrict')
         },
         async trashes() {

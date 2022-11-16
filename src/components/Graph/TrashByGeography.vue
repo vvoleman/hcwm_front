@@ -94,7 +94,6 @@ export default {
                 return
             }
 
-            console.log(this.isReady)
             if (this.isReady) {
                 this.trashes = await useTrashStore().getTrash(data.type, data.id)
             }

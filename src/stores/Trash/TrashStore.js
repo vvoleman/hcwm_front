@@ -27,7 +27,6 @@ export const useTrashStore = defineStore('TrashStore', {
 	},
 	actions: {
 		async load(type, id) {
-			console.log(type,id)
 			this.promises[type] = axios.get(`${API_ENDPOINT}/geography/${type}/${id}`)
 			const response = await this.promises[type]
 
@@ -78,7 +77,6 @@ export const useTrashStore = defineStore('TrashStore', {
 			if (response.status === 200) {
 				result = {}
 				for (const area of response.data.data) {
-					console.log(type, id, )
 					let areaId = area[type + '_id']
 					if (this[type][areaId] === undefined) {
 						this[type][areaId] = {}

@@ -1,7 +1,5 @@
 <template>
-    <h1>Ted</h1>
     <custom-marker
-        v-if="region !== null"
         :map="map"
         :marker="getCoords(region.coords)"
     >
@@ -13,7 +11,6 @@
                 :width="width"
                 :height="height"
             />
-            <div class="tooltip" :id="region.id"></div>
         </div>
     </custom-marker>
 </template>
@@ -48,7 +45,7 @@ export default {
                         position: 'bottom'
                     },
                     tooltip: {
-                        enabled: false,
+                        enabled: true,
                         caretSize: 0,
                         position: "nearest",
                         // external: (context) => {

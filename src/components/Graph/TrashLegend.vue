@@ -1,6 +1,6 @@
 <template>
     <div class="details">
-        <button class="col-12" @click="visible = !visible">{{visible ? "Zavřít" : "Otevřít"}}</button>
+        <button class="col-12" @click="visible = !visible">{{visible ? "Zavřít" : "Otevřít"}} legendu</button>
         <div class="legends" v-show="visible">
             <div v-for="trash in trashes" :key="trash.code" class="legend">
                 <TrashLegendItem :code="trash.code" :name="trash.name" :color="trash.color"/>
@@ -21,7 +21,7 @@ export default {
     },
     data(){
         return {
-            visible: true,
+            visible: false,
             trashes: {}
         }
     },

@@ -93,7 +93,6 @@ export default {
                     }
                 },
                 legendCallback: function (chart) {
-                    console.log(chart)
                     var legendHtml = [];
                     legendHtml.push('<ul>');
                     var item = chart.data.datasets[0];

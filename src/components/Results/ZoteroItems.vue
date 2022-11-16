@@ -31,4 +31,6 @@ export default {
     display:flex;
     flex-wrap: wrap;
 }
+/* every .zotero-items .abstract should have a same heigh */
+
 </style>

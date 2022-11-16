@@ -20,7 +20,6 @@ function getOrCreateLegendList(chart, id) {
 export const htmlLegendPlugin = {
 	id: 'htmlLegend',
 	afterUpdate(chart, args, options) {
-		console.log(options.containerID)
 		const ul = getOrCreateLegendList(chart, options.containerID);
 		// console.log(ul)
 		//
