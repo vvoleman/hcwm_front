@@ -2,7 +2,7 @@
     <div class="item">
         <div class="title-line">
             <h3>
-                {{ getTranslations(title, currentLocale).text }}
+                {{ getTranslation(title, currentLocale).text }}
             </h3>
             <TranslateModal
                 v-if="displayTranslate"
@@ -19,14 +19,22 @@
             </Transition>
         </div>
         <div class="tags">
-            <div class="tag" v-for="tag in categories" :key="tag.id">{{ tag.text }}</div>
+            <button class="tag" v-for="tag in categories" :key="tag.id" @click="handleTagClick(tag.id)">
+                <span>
+                    {{ tag.text }}
+                </span>
+            </button>
         </div>
     </div>
 </template>
 
 <script>
 import TranslateModal from "@/components/TranslateModal";
-import {translate} from "@/logics/api/languages";
+import {useTranslationStore} from "@/stores/Zotero/TranslationStore";
+import {mapActions} from "pinia";
+import {emitter} from "@/composables/useEvent";
+import FilterData from "@/logics/api/data/FilterData";
+
 export default {
     name: "SingleItem",
     components: {TranslateModal},
@@ -37,7 +45,7 @@ export default {
         categories: Array,
         url: String
     },
-    data(){
+    data() {
         return {
             displayTranslate: false,
             loadingTranslation: false,
@@ -50,23 +58,20 @@ export default {
         }
     },
     methods: {
-        getTranslations(arr, code) {
-            for (const item of arr) {
-                if (item.code === code) {
-                    return item;
-                }
-            }
-            console.error('No translations found');
-        },
+        ...mapActions(useTranslationStore, ['getTranslation']),
         async translateAbstract(code) {
             this.loadingTranslation = true
-            const result = await translate(code, this.id)
+            const result = await useTranslationStore().translate(code, this.id)
             this.loadingTranslation = false
 
-            if(result != null){
+            if (result != null) {
                 this.text = result
             }
-
+        },
+        handleTagClick(id) {
+            let data = new FilterData()
+            data.categories = [id]
+            emitter.emit('filter-changed', data)
         }
     }
 }
@@ -75,13 +80,15 @@ export default {
 <style scoped>
 .item {
     padding: 15px;
-    width: calc(100% / 12 * 3 - 10px);
-    margin-right:10px;
-    box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.2);
+    width: calc(25% - 10px);
+    margin-right: 10px;
+    box-shadow: 0 0 3px 0 rgb(0 0 0 / 20%);
     min-height: 50px;
     background: #eee;
     border-radius: 5px;
     margin-top: 15px;
+    display: flex;
+    flex-direction: column;
 }
 
 .tag::before {
@@ -112,6 +119,7 @@ export default {
 .item .title-line {
     display: flex;
     justify-content: space-between;
+    flex: 1;
 }
 
 .item .abstract {
@@ -142,6 +150,10 @@ export default {
 
 .item .tags .tag {
     display: inline-block;
+    border:none;
+}
+.item .tags .tag:hover{
+    background: var(--main-color-darkest);
 }
 
 @media only screen and (max-width: 720px) {

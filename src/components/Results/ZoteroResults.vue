@@ -8,8 +8,8 @@
                         <ZoteroFolder
                             v-for="folder in folders"
                             :key="folder.id"
-                            :text="getTranslations(folder.text,currentLocale).text"
-                            :path="getTranslations(folder.path,currentLocale).path"/>
+                            :text="getTranslation(folder.text,currentLocale).text"
+                            :path="getTranslation(folder.path,currentLocale).path"/>
                     </div>
                 </div>
                 <div>
@@ -33,6 +33,8 @@ import ZoteroFolder from '@/components/ZoteroFolder'
 import ZoteroItems from "@/components/Results/ZoteroItems";
 import SpinLoader from "@/components/SpinLoader";
 import RecentItems from "@/components/RecentItems";
+import {mapActions} from "pinia";
+import {useTranslationStore} from "@/stores/Zotero/TranslationStore";
 
 export default {
     name: "ZoteroResults",
@@ -55,14 +57,7 @@ export default {
         }
     },
     methods: {
-        getTranslations(arr, code) {
-            for (const item of arr) {
-                if (item.code === code) {
-                    return item;
-                }
-            }
-            console.error('No translations found');
-        }
+        ...mapActions(useTranslationStore, ['getTranslation']),
     }
 }
 </script>

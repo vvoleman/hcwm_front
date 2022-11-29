@@ -43,9 +43,9 @@
 </template>
 
 <script>
-import {getLanguages} from "@/logics/api/languages";
 import FilterData from "@/logics/api/data/FilterData";
-import {loadCategories} from "@/logics/api/assets";
+import {useAssetStore} from "@/stores/Zotero/AssetStore";
+import {emitter} from "@/composables/useEvent";
 
 export default {
     name: "ZoteroFilter",
@@ -59,24 +59,51 @@ export default {
             selectedQuery: ''
         }
     },
-    mounted() {
-        getLanguages().then(value => {
-            //remap to value name flag
-            this.languages = value.map(language => {
-                return {
-                    value: language.code,
-                    name: language.name,
-                    flag: language.flag
-                }
+    async mounted() {
+        let languages = await useAssetStore().allLanguages
+        if (languages === null) {
+            this.$notify({
+                title: this.$t('ui.error'),
+                text: this.$t('ui.items.errors.languages'),
+                type: 'error'
             })
+            this.languages = []
+            return
+        }
+
+        this.languages = languages.map(language => {
+            return {
+                value: language.code,
+                name: language.name,
+                flag: language.flag
+            }
         })
-        loadCategories().then(value =>{
-            this.categories = value.map(category =>{
-                return {
-                    value: category.id,
-                    name: category.text
-                };
+
+        let categories = await useAssetStore().allCategories
+        console.log(categories, languages)
+        if (categories === null) {
+            this.$notify({
+                title: this.$t('ui.error'),
+                text: this.$t('ui.collections.errors.categories'),
+                type: 'error'
             })
+            this.categories = []
+            return
+        }
+
+        this.categories = categories.map(category => {
+            return {
+                value: category.id,
+                name: category.text
+            }
+        })
+
+        // On filter change
+        emitter.on('filter-changed', (data) => {
+            console.log('CLICKED',data)
+            this.selectedCategories = data.categories
+            // set current route to /
+            this.search()
         })
     },
     methods: {

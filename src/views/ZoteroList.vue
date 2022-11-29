@@ -9,8 +9,8 @@
 import ZoteroFilter from "@/components/ZoteroFilter";
 import ZoteroResults from "@/components/Results/ZoteroResults";
 
-import { getItems } from "@/logics/api/filterItems";
 import FilterData from "@/logics/api/data/FilterData";
+import {useItemStore} from "@/stores/Zotero/ItemStore";
 
 export default {
     name: "ZoteroList",
@@ -31,17 +31,23 @@ export default {
     methods: {
         async loadItems(data){
             this.isLoading = true;
-            const response = await getItems(data)
+            const response = await useItemStore().getFilteredItems(data);
             this.isLoading = false;
             if(response !== null){
                 this.items = response.items;
                 this.folders = response.folders;
                 this.breadcrumbs = response.breadcrumbs
             } else {
-                console.error('loadItems API error');
+                console.error('Unable to load filtered items');
+                this.$notify({
+                    title: this.$t('ui.error'),
+                    text: this.$t('ui.items.errors.filtered_items'),
+                    type: 'error'
+                })
             }
         },
         search(data) {
+            console.log(data)
             this.loadItems(data)
         }
     },

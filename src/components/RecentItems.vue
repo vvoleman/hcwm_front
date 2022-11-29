@@ -19,7 +19,7 @@
 
 <script>
 import SingleItem from "@/components/Results/SingleItem";
-import {getRecent} from "@/logics/api/filterItems";
+import {useItemStore} from "@/stores/Zotero/ItemStore";
 export default {
     name: "RecentItems",
     components: {SingleItem},
@@ -28,19 +28,18 @@ export default {
             items: []
         }
     },
-    mounted() {
-        getRecent().then(result => {
-            if(result == null){
-                this.$notify({
-                    'title': 'Chyba',
-                    'text': 'Nepodařilo se získat nedávné články. Zkuste to prosím později',
-                    'type': 'error'
-                })
-                return
-            }
+    async mounted() {
+        let recent = await useItemStore().recentItems;
 
-            this.items = result
-        })
+        if (recent === null) {
+            this.$notify({
+                title: this.$t('ui.error'),
+                text: this.$t('ui.items.errors.recent_items'),
+                type: 'error'
+            })
+        } else {
+            this.items = recent;
+        }
     }
 }
 </script>

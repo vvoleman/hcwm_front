@@ -1,5 +1,8 @@
 const translations = {
 	"ui": {
+		"app": {
+			"error": "Chyba",
+		},
 		"collections": {
 			"active_collection": "Aktuální kolekce",
 			"advanced_filter": "Rozšířené filterování",
@@ -9,6 +12,12 @@ const translations = {
 			}
 		},
 		"items": {
+			"errors":{
+				"filtered_items": "Nepodařilo se načíst články",
+				"recent_items": "Nepodařilo se načíst nedávné články",
+				"categories": "Nepodařilo se načíst kategorie",
+				"languages": "Nepodařilo se načíst jazyky",
+			},
 			"root":"Vše",
 			"no_results": "Žádné výsledky",
 			"translate": "Přeložit",

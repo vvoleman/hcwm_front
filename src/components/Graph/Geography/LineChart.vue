@@ -35,7 +35,6 @@ import {
     PointElement
 } from 'chart.js'
 import {stringToColor} from "@/logics/hash";
-import {getTrashesByDistrict} from "@/logics/api/trashes";
 import {linearRegression} from "@/logics/math/regression";
 import {lightenColor} from "@/logics/helpers";
 
@@ -194,20 +193,6 @@ export default {
             }
             this.datasets = datasets
             this.labels = Object.keys(records[keys[0]]);
-        },
-        async load() {
-            const result = await getTrashesByDistrict(this.districtCode)
-
-            if (result === null) {
-                this.$notify({
-                    'title': 'Chyba',
-                    'text': 'Nepodařilo se získat data. Zkuste to prosím později',
-                    'type': 'error'
-                })
-                return
-            }
-
-            this.doTheMagic(result)
         },
         linear(data) {
             let y = data

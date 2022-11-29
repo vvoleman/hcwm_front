@@ -19,7 +19,7 @@
 
 <script>
 import '@/assets/images/flags/cs/width_40.png'
-import {getLanguages} from "@/logics/api/assets";
+import {useAssetStore} from "@/stores/Zotero/AssetStore";
 
 export default {
     name: "LanguagePicker",
@@ -30,12 +30,12 @@ export default {
         }
     },
     async mounted() {
-        this.languages = await getLanguages()
+        this.languages = await useAssetStore().allLanguages
         this.selectedLanguage(this.$i18n.locale)
     },
     methods: {
         async selectedLanguage(code) {
-            const filteredLanguages = await getLanguages()
+            const filteredLanguages = await useAssetStore().allLanguages
 
             if (filteredLanguages.length === 0) {
                 code = this.$i18n.fallbackLocale

@@ -14,20 +14,7 @@ export default {
         text: String,
         path: String
     },
-    computed: {
-        currentLocale() {
-            return this.$i18n.locale
-        }
-    },
     methods: {
-        getTranslations(arr, code) {
-            for (const item of arr) {
-                if (item.code === code) {
-                    return item;
-                }
-            }
-            console.error('No translations found');
-        }
     }
 }
 </script>

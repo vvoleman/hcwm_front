@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto&family=Fira+Sans&family=Josefin+Sans&family=Open+Sans&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Roboto&family=Fira+Sans&family=Josefin+Sans&family=Open+Sans&family=Noto+Sans&display=swap');
 
 :root {
     --main-color-darkest: #205046;
@@ -20,7 +20,7 @@
     --navbar-bg: var(--main-color-darkest);
     --navbar-color: white;
     --navbar-color-hover: white;
-    --body-font: '';
+    --body-font: 'Noto Sans';
     --logo-font: 'Josefin Sans';
     --logo-color: white;
     --logo-size: 30px;

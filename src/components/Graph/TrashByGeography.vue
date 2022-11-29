@@ -28,7 +28,7 @@
             <b class="subtitle">{{name}}</b>
         </div>
         <div v-show="isReady">
-            <DataTable :trashes="trashes" :name="name" idTable="geography_data"/>
+            <DataTable @exportTable="downloadDatasheet" :trashes="trashes" :name="name" idTable="trashByGeography"/>
         </div>
         <spin-loader v-show="!isReady"></spin-loader>
     </div>
@@ -60,12 +60,12 @@ import SelectGeography from "@/components/Graph/Geography/SelectGeography";
 import LineChart from "@/components/Graph/Geography/LineChart";
 import BarChart from "@/components/Graph/Geography/BarChart";
 import DataTable from "@/components/Graph/Geography/DataTable";
-// import {getName} from "@/logics/api/geography/basic";
 import SpinLoader from "@/components/SpinLoader";
 import {useTrashStore} from "@/stores/Trash/TrashStore";
 import {useGeographyStore} from "@/stores/Geography/GeographyStore";
 import SegmentWrapper from "@/components/Graph/SegmentWrapper";
 import TrashLegendItem from "./TrashLegendItem";
+import {downloadTable} from "@/logics/api/spreadsheets";
 
 export default {
     name: "TrashByGeography",
@@ -89,6 +89,9 @@ export default {
     async mounted() {
     },
     methods: {
+        async downloadTable(id) {
+            await downloadTable(id, `${this.selected.type}/${this.selected.id}/${this.y}`)
+        },
         async handleSelectUpdate(data) {
             if (data.id === this.selected.id) {
                 return

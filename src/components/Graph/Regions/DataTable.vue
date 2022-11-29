@@ -6,7 +6,7 @@
                 {{ $t('ui.graphs.cancel_selection_btn') }}
             </button>
             <button @click="changeOnlySelected" class="btn-export">
-                {{ $t('ui.graphs.cancel_selection_btn') }}
+                {{ $t('ui.graphs.show_only_selection_btn') }}
             </button>
         </div>
         <button @click="exportTable" class="btn-export" :aria-label="$t('ui.graphs.export_btn')">Exportovat</button>
@@ -51,7 +51,6 @@
 <script>
 import {prettify} from "@/logics/helpers";
 import {useGeographyStore} from "@/stores/Geography/GeographyStore";
-import {exportTableToExcel} from "@/logics/data/export";
 
 export default {
     name: "DataTable",
@@ -97,6 +96,7 @@ export default {
     },
     methods: {
         changeOnlySelected() {
+            console.log(`Changing from ${this.showOnlySelected} to ${!this.showOnlySelected}`)
             this.showOnlySelected = !this.showOnlySelected
         },
         cancelSelection() {
@@ -128,7 +128,7 @@ export default {
             return true
         },
         exportTable() {
-            exportTableToExcel(document.getElementById(this.idTable), 'odpady_' + this.year)
+            this.$emit('exportTable', this.idTable)
         },
         prettify(value, suffix = ' t', precision = 2) {
             return prettify(value, suffix, precision)

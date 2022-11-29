@@ -17,6 +17,7 @@
     "chart.js": "^3.7.1",
     "click-outside-vue3": "^4.0.1",
     "core-js": "^3.8.3",
+    "emittery": "^1.0.1",
     "leaflet-spin": "^1.1.2",
     "pinia": "^2.0.21",
     "regression": "^2.0.1",
@@ -51,7 +52,9 @@
     "parserOptions": {
       "parser": "@babel/eslint-parser"
     },
-    "rules": {}
+    "rules": {
+      "vue/multi-word-component-names": "off"
+    }
   },
   "browserslist": [
     "> 1%",

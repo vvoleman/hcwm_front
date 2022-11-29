@@ -33,8 +33,9 @@
                 <data-table
                     v-bind="selected"
                     :year="selected.year"
-                    id-table="regionsTable"
+                    id-table="trashByRegions"
                     :area-selected="selectedAreas"
+                    @exportTable="exportTable"
                     @cancelSelection="cancelSelection"
                 />
             </div>
@@ -75,6 +76,7 @@ import {useTrashStore} from "@/stores/Trash/TrashStore";
 import SegmentWrapper from "@/components/Graph/SegmentWrapper";
 import TrashLegendItem from "@/components/Graph/TrashLegendItem";
 import SelectAreas from "@/components/Graph/Regions/SelectAreas";
+import {downloadTable} from "@/logics/api/spreadsheets";
 
 export default {
     name: 'TrashByRegions',
@@ -108,6 +110,9 @@ export default {
         },
     },
     methods: {
+        async exportTable(id) {
+            await downloadTable(id, `${this.selected.type}/${this.selected.id}/${this.selected.year}`, `trashByRegions-${this.selected.year}`)
+        },
         cancelSelection(id){
             if (id !== null && this.selectedAreasIds[id]) {
                 this.selectedAreasIds[id] = false;

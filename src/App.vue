@@ -2,14 +2,16 @@
     <notifications position="bottom right" />
     <NavBar />
     <router-view></router-view>
+    <Footer />
 </template>
 
 <script>
 
 import NavBar from "@/components/NavBar";
+import Footer from "@/components/Footer";
 export default {
   name: 'App',
-    components: {NavBar},
+    components: {NavBar, Footer},
     mounted() {
         const savedLanguage = localStorage.getItem('i18n')
         if (savedLanguage !== null) {

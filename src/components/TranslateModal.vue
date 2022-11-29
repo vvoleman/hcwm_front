@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import {getLanguages} from "@/logics/api/assets";
 import Multiselect from "@vueform/multiselect";
+import {useAssetStore} from "@/stores/Zotero/AssetStore";
 
 export default {
     name: "TranslateModal",
@@ -36,7 +36,7 @@ export default {
         }
     },
     async mounted() {
-        this.languages = (await getLanguages()).map((lang) => {
+        this.languages = (await useAssetStore().allLanguages).map((lang) => {
             return {
                 value: lang.code,
                 name: lang.name,

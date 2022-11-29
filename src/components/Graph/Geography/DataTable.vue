@@ -44,7 +44,6 @@
 
 <script>
 import {prettify} from "@/logics/helpers";
-import {exportTableToExcel} from "@/logics/data/export";
 
 export default {
     name: "DataTable",
@@ -60,7 +59,7 @@ export default {
         idTable: {
             type: String,
             required: true
-        }
+        },
     },
     data(){
         return {
@@ -96,7 +95,7 @@ export default {
             return prettify(value, suffix, precision)
         },
         exportTable(){
-            exportTableToExcel(document.getElementById(this.idTable), 'odpady_' + this.name.toLowerCase())
+            this.emit('exportTable', this.idTable)
         },
         calculateTrashSums(trashes) {
             let sums = {}
