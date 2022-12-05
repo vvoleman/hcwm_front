@@ -61,10 +61,11 @@ export default {
         ...mapActions(useTranslationStore, ['getTranslation']),
         async translateAbstract(code) {
             this.loadingTranslation = true
-            const result = await useTranslationStore().translate(code, this.id)
+            const result = await useTranslationStore().translate(this.id, code)
             this.loadingTranslation = false
 
             if (result != null) {
+                console.log(result)
                 this.text = result
             }
         },

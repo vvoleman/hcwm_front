@@ -7,7 +7,7 @@
         </a>
         <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-language">
             <li v-for="language in getUnselectedLanguages" :key="language.code">
-                <a class="dropdown-item" @click="selectedLanguage(language.code)">
+                <a class="dropdown-item" href="#" @click="selectedLanguage(language.code)">
                     <img style="margin-right: 5px" :src="language.flag" width="30"
                          :alt="language.code">
                     {{ language.name }}
@@ -31,7 +31,7 @@ export default {
     },
     async mounted() {
         this.languages = await useAssetStore().allLanguages
-        this.selectedLanguage(this.$i18n.locale)
+        await this.selectedLanguage(this.$i18n.locale)
     },
     methods: {
         async selectedLanguage(code) {
@@ -41,7 +41,7 @@ export default {
                 code = this.$i18n.fallbackLocale
             }
             let newLanguage = this.filterLanguage(code)
-            console.log('Selected language: '+code)
+            console.info('Selected language: '+code)
 
             if (newLanguage.length === 0) {
                 console.error('Unable to select language!');
@@ -95,6 +95,8 @@ a.nav-link {
     right:0;
     left:inherit;
 }
+
+
 #dropdown-language:hover, .item:hover {
     background-size: 0;
 }

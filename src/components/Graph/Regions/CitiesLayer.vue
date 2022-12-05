@@ -6,8 +6,7 @@
             :map="map"
             :region="region"
             :year="year"
-            :width="width"
-            :height="height"
+            :sizes="size"
         />
     </div>
 </template>
@@ -31,13 +30,25 @@ export default {
     },
     data() {
         return {
-            trashes: {},
-            default: {
-                width: 50,
-                height: 50
+            sizes: {
+                7: {
+                    width: 80,
+                    height: 80
+                },
+                8: {
+                    width: 100,
+                    height: 100
+                },
+                9: {
+                    width: 120,
+                    height: 120
+                },
+                10: {
+                    width: 140,
+                    height: 140
+                },
             },
-            width: 50,
-            height: 50,
+            trashes: {},
         }
     },
     mounted() {
@@ -48,6 +59,11 @@ export default {
             this.trashes = await useGeographyStore().getGeographyWithTrashes(type, id, year)
         }
     },
+    computed: {
+        size() {
+            return this.sizes[this.zoom] || this.sizes[7]
+        }
+    },
     watch: {
         year() {
             this.setTrashes(this.type, this.id, this.year)
@@ -56,8 +72,8 @@ export default {
             this.setTrashes(this.type, this.id, this.year)
         },
         zoom() {
-            this.width = Math.max(this.default.width,0.5*this.default.width * (this.zoom - 7));
-            this.height = Math.max(this.default.height,0.5*this.default.height * (this.zoom - 7));
+            // this.width = Math.max(this.default.width,0.5*this.default.width * (this.zoom - 7));
+            // this.height = Math.max(this.default.height,0.5*this.default.height * (this.zoom - 7));
         }
     }
 

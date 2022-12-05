@@ -7,18 +7,19 @@ export const useTranslationStore = defineStore('ZoteroTranslationStore', {
 	state: () => {
 		return {
 			translations: {},
-			translationsPromise: {}
+			translationsPromise: null
 		}
 	},
 	actions: {
 		async load(item,code,hashed) {
 			this.translationsPromise = axios.get(`${API_ENDPOINT}/translate`, {
 				params: {
-					lang: code,
+					language: code,
 					item: item
 				}
 			})
-			const response = await this.countriesPromise
+			console.log(this.translationsPromise)
+			const response = await this.translationsPromise
 
 			if (response.status === 200) {
 				this.translations[hashed] = response.data.data.translation
@@ -26,16 +27,17 @@ export const useTranslationStore = defineStore('ZoteroTranslationStore', {
 			this.translationsPromise[hashed] = null
 		},
 		async loadOrAwait(item,code,hashed) {
-			if(this.countriesPromise === null) {
+			if(this.translationsPromise === null) {
 				await this.load(item, code, hashed)
 			} else {
-				await this.countriesPromise
+				await this.translationsPromise
 			}
 		},
 		async translate(item,code) {
 			let hashed = this.hash(item,code)
-
+			console.log(item, code)
 			if(this.translations[hashed] === undefined) {
+				console.log(this.translations[hashed])
 				await this.loadOrAwait(item, code, hashed)
 			}
 
@@ -47,6 +49,14 @@ export const useTranslationStore = defineStore('ZoteroTranslationStore', {
 					return item;
 				}
 			}
+
+			let defaultFallback = this.getTranslation(texts, 'cs');
+
+			if (defaultFallback !== undefined) {
+				console.log('No translation for ' + code + ' found, using cs instead');
+				return defaultFallback
+			}
+
 			console.error('No translations found');
 		},
 		hash(text, code){

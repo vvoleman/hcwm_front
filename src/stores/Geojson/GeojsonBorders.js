@@ -5,9 +5,11 @@ import {defineStore} from "pinia";
 export const useGeojsonBordersStore = defineStore('GeojsonBordersStore', {
 	state: () => {
 		return {
+			'country': null,
 			'regions': {},
 			'districts': {},
 			'promises': {
+				'country': null,
 				'regions': null,
 				'districts': {}
 			}
@@ -36,6 +38,26 @@ export const useGeojsonBordersStore = defineStore('GeojsonBordersStore', {
 				return null;
 			}
 
+		},
+		async getCountryBorders(id) {
+			if (this.country !== null) {
+				return this.country
+			}
+
+			if (this.promises.country === null) {
+				this.promises.country = axios.get(`${API_ENDPOINT}/geography/country/${id}/borders`)
+			}
+
+			const response = await this.promises.country
+
+			this.promises.country = null
+
+			if (response.status === 200) {
+				this.country = response.data.data;
+				return this.country
+			} else {
+				return null;
+			}
 		},
 		async getRegionsBorders() {
 			if (Object.keys(this.regions).length !== 0) {

@@ -164,6 +164,11 @@ export default {
     watch: {}
 };
 </script>
+<style>
+canvas {
+    z-index:4 !important;
+}
+</style>
 <style scoped>
 label {
     clip-path: polygon(75% 0, 0 0, 0 100%, 75% 100%, 100% 50%);

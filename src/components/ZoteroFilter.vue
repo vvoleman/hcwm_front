@@ -34,9 +34,6 @@
                         @input="(data)=>{selectedCategories = data}"
                         :options="categories"/>
                 </div>
-<!--                <div class="col-12 mx-auto result-number">-->
-<!--                    <span><b>0</b> výsledků</span>-->
-<!--                </div>-->
             </div>
         </transition>
     </div>
@@ -159,6 +156,7 @@ import SelectMultiple from "@/components/SelectMultiple";
     background: var(--folder-alt-bg);
     border-radius: 5px;
     min-height: 50px;
+    margin-bottom: 30px;
 }
 
 .arrow-up {
@@ -170,7 +168,7 @@ import SelectMultiple from "@/components/SelectMultiple";
     border-left: 25px solid transparent;
     border-right: 25px solid transparent;
 
-    border-bottom: 25px solid #eee;
+    border-bottom: 25px solid var(--folder-alt-bg);
 }
 
 .result-number {

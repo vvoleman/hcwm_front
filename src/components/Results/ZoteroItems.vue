@@ -10,7 +10,7 @@
             :url="item.url"
         />
     </div>
-    <div v-else class="text-center">
+    <div v-else class="text-center no-results">
         <b>{{ $t('ui.items.no_results') }}</b>
     </div>
 </template>
@@ -31,6 +31,11 @@ export default {
     display:flex;
     flex-wrap: wrap;
 }
+.no-results {
+    margin-top: 20px;
+    color: rgba(0,0,0,0.5);
+}
+
 /* every .zotero-items .abstract should have a same heigh */
 
 </style>

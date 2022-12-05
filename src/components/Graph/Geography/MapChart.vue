@@ -1,4 +1,5 @@
 <template>
+    <h3>{{zoom}}</h3>
     <l-map
         ref="map"
         :options="mapOptions"
@@ -19,51 +20,29 @@
             :visible="false"
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         ></l-tile-layer>
-        <l-feature-group v-if="showCountry" @ready="setBounds">
-            <div class="border-danger">
-            <l-geo-json
-                v-for="record in geojson"
-                :key="record.id"
-                :geojson="record"
-                :options="options"
-                :options-style="styleFunction"
+        <div>
+            <CountryLayer :show="true" :fill-opacity="type !== 'region' ? 0 : null"/>
+            <RegionLayer
+                :show="showCountry"
+                :zoom="zoom"
+                :map="map"
+                :year="year"
+                :type="type"
+                :id="id"
+                @ready="handleReady"
+                @setBounds="setBounds"
             />
-            </div>
-            <div>
-                <CitiesLayer
-                    :zoom="zoom"
-                    :map="map"
-                    :year="year"
-                    :type="type"
-                    :id="id"
-                />
-            </div>
-        </l-feature-group>
-        <div v-if="attempt">
-            <l-feature-group
-                ref="feature"
-                @ready="setBounds"
-                v-for="(value, key) in details"
-                :key="key">
-                <div v-if="canDisplayDetail(key)">
-                    <l-geo-json
+        </div>
 
-                        v-for="record in value"
-                        :key="record.id"
-                        :options="optionsDetails"
-                        :geojson="record"
-                    />
-                    <CitiesLayer
-                        :zoom="zoom"
-                        :map="map"
-                        :year="year"
-                        :type="type"
-                        :id="id"
-                    />
-                </div>
-
-
-            </l-feature-group>
+        <div>
+            <DistrictLayer
+                :zoom="zoom"
+                :map="map"
+                :year="year"
+                :type="type"
+                :id="id"
+                @ready="handleReady"
+                @setBounds="setBounds"/>
         </div>
     </l-map>
 </template>
@@ -85,7 +64,10 @@ import {
 } from "@vue-leaflet/vue-leaflet";
 import CitiesLayer from "@/components/Graph/Regions/CitiesLayer";
 import {latLngBounds, latLng} from "leaflet";
-import {useGeojsonBordersStore} from "@/stores/Geojson/GeojsonBorders";
+import RegionLayer from "@/components/Graph/Regions/RegionLayer";
+import DistrictLayer from "@/components/Graph/Regions/DistrictLayer";
+import CountryLayer from "@/components/Graph/Regions/CountryLayer";
+
 let originColor = {
     color: "#1F5E4A",
     opacity: 0.5,
@@ -93,6 +75,9 @@ let originColor = {
 export default {
     name: "MapChart",
     components: {
+        CountryLayer,
+        DistrictLayer,
+        RegionLayer,
         TrashLegend,
         LMap,
         LTileLayer,
@@ -124,6 +109,7 @@ export default {
             default: () => []
         },
     },
+    emits: ['geography-selected', 'ready'],
     data() {
         return {
             mapOptions: {
@@ -135,77 +121,23 @@ export default {
             ),
             zooms: {
                 region: {min: 8, max: 12},
-                country: {min: 7, max: 8},
+                country: {min: 7, max: 12},
                 '': {min: 7, max: 8}
             },
-            attempt: true,
             bounds: [],
             zoom: 7,
-            iconWidth: 25,
-            iconHeight: 40,
-            loading: false,
-            layers: [],
             enableTooltip: true,
             center: latLng(49.743876792996865, 15.339122571121992),
             marker: latLng(49.743876792996865, 15.339122571121992),
-            geojson: [],
-            details: {},
-            displayDetails: {},
-            counter: 0,
-            selectedRegion: null,
-            fillColor: "#e4ce7f",
-            url: 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw',
-            attribution:
-                '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+            isReady: false
         }
     },
     computed: {
-        zoomType() {
-            return this.zooms[this.type];
-        },
         showCountry() {
-            for (let i in this.displayDetails) {
-                return false
-            }
-            return true
+            return this.type !== 'region'
         },
         map() {
             return this.$refs.map;
-        },
-        options() {
-            return {
-                onEachFeature: this.onEachFeatureFunction,
-                style: this.styleFunction,
-            };
-        },
-        optionsDetails() {
-            return {
-                style: function () {
-                    return {
-                        color: "#1F5E4A",
-                        weight: 1,
-                        opacity: 1,
-                        fillColor: "#1F5E4A",
-                        fillOpacity: 0.5,
-                    }
-                },
-                onEachFeature: (feature, layer) => {
-                    if (feature.properties && feature.properties.name) {
-                         layer.bindPopup(feature.properties.name, {closeButton: false, offset: L.point(0,0)});
-                         layer.on('mouseover', function() { layer.openPopup(); });
-                         layer.on('mouseout', function() { layer.closePopup(); });
-                    }
-                }
-            }
-        },
-        styleFunction() {
-            return {
-                color: "#1F5E4A",
-                weight: 1,
-                opacity: 1,
-                fillColor: "#1F5E4A",
-                fillOpacity: 0.3,
-            }
         },
         onEachFeatureFunction() {
             if (!this.enableTooltip) {
@@ -215,7 +147,7 @@ export default {
 
             return (feature, layer) => {
                 if (feature.properties && feature.properties.name) {
-                    layer.on('click', ()=>{
+                    layer.on('click', () => {
                         this.$emit('geography-selected', feature.properties.id)
                     })
                     layer.bindPopup(feature.properties.name, {closeButton: false, offset: L.point(0, -30)});
@@ -250,60 +182,28 @@ export default {
     methods: {
         setBounds(e) {
             this.$nextTick(() => {
+                console.log(e);
                 this.bounds = e.getBounds()
             })
         },
-        async toggleDetails(id) {
-            this.details[id] = await useGeojsonBordersStore().getDistrictsBorders(id)
-
-            if (Object.keys(this.displayDetails).length > 0) {
-                this.displayDetails = {}
-            }
-            this.displayDetails[id] = null;
-            this.$emit('ready')
-        },
-        canDisplayDetail(id) {
-            return this.displayDetails[id] !== undefined;
+        handleReady(isReady) {
+            this.isReady = isReady
         }
-    },
-    async mounted() {
-        // const country = await getTrash('country', 'cz')
-        const result = await useGeojsonBordersStore().getRegionsBorders()
-
-        this.selectedRegion = {
-            'name': 'Česká republika',
-            'trashes': {}
-        }
-
-        if (result === null) {
-            this.$notify({
-                'title': 'Chyba',
-                'text': 'Nepodařilo se získat nedávné články. Zkuste to prosím později',
-                'type': 'error'
-            })
-            return
-        }
-        this.geojson = result;
-        this.$emit('ready')
     },
     watch: {
-        id() {
-            if (!this.attempt) return;
-
-            if (this.type === 'district') return;
-
-            if (this.type === 'country') {
-                this.displayDetails = {};
+        isReady() {
+            if (this.isReady) {
                 this.$emit('ready')
-                return
             }
-
-            this.toggleDetails(this.id)
-        }
+        },
     }
 }
 </script>
-
+<style>
+.leaflet-container path{
+    transition:  .1s;
+}
+</style>
 <style scoped>
 
 </style>

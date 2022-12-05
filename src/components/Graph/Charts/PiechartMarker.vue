@@ -8,36 +8,52 @@
                 :ref="region.id"
                 :chart-options="chartOptions"
                 :chart-data="chartData"
-                :width="width"
-                :height="height"
+                :width="sizes.width"
+                :height="sizes.height"
             />
+            <tooltip
+                :show="tooltip.show"
+                :name="tooltip.name"
+                :value="tooltip.value"
+                :x="tooltip.x"
+                :y="tooltip.y"
+            />
+            <div :ref="'tooltip_'+region.id"></div>
         </div>
     </custom-marker>
 </template>
 
 <script>
-import {ArcElement, Chart as ChartJS, Legend, Tooltip} from 'chart.js';
+import {ArcElement, Chart as ChartJS, Legend} from 'chart.js';
 import CustomMarker from "@/components/vue-leaflet-custom-marker";
 import {Pie} from 'vue-chartjs'
 import {stringToColor} from "@/logics/hash";
 import {getUnit} from "@/logics/units";
-ChartJS.register(ArcElement, Tooltip, Legend);
+import Tooltip from "@/components/Graph/Charts/Tooltip";
+import {prettify} from "@/logics/helpers";
+ChartJS.register(ArcElement, Legend);
 export default {
     name: "PiechartMarker",
     props: {
-        width: {type: Number, required:true},
-        height: {type: Number, required:true},
+        sizes: {type: Object, required:true},
         map: {type: Object, required: true},
         region: {type: Object, required: true},
         year: {type: Number, required: true},
     },
     data() {
         return {
+            tooltip: {
+                show: false,
+                name: '',
+                value: '',
+                x: 0,
+                y: 0,
+            },
             labels: [],
             datasets: [],
             sum: null,
             chartOptions: {
-                responsive: true,
+                responsive: false,
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
@@ -45,78 +61,9 @@ export default {
                         position: 'bottom'
                     },
                     tooltip: {
-                        enabled: true,
+                        enabled: false,
                         caretSize: 0,
                         position: "nearest",
-                        // external: (context) => {
-                        //     // Tooltip Element
-                        //     let tooltipEl = document.getElementById(this.region.id);
-                        //     console.log(tooltipEl)
-                        //
-                        //     // Create element on first render
-                        //     if (!tooltipEl) {
-                        //         tooltipEl = document.createElement('div');
-                        //         tooltipEl.id = this.region.id;
-                        //         document.body.appendChild(tooltipEl);
-                        //     }
-                        //
-                        //     tooltipEl.innerHTML = '<table></table>';
-                        //
-                        //     // Hide if no tooltip
-                        //     const tooltipModel = context.tooltip;
-                        //     if (tooltipModel.opacity === 0) {
-                        //         tooltipEl.style.opacity = 0;
-                        //         return;
-                        //     }
-                        //
-                        //     // Set caret Position
-                        //     tooltipEl.classList.remove('above', 'below', 'no-transform');
-                        //     if (tooltipModel.yAlign) {
-                        //         tooltipEl.classList.add(tooltipModel.yAlign);
-                        //     } else {
-                        //         tooltipEl.classList.add('no-transform');
-                        //     }
-                        //
-                        //     function getBody(bodyItem) {
-                        //         return bodyItem.lines;
-                        //     }
-                        //
-                        //     // Set Text
-                        //     if (tooltipModel.body) {
-                        //         const titleLines = tooltipModel.title || [];
-                        //         const bodyLines = tooltipModel.body.map(getBody);
-                        //
-                        //         let innerHtml = '<thead>';
-                        //
-                        //         titleLines.forEach(function(title) {
-                        //             innerHtml += '<tr><th>' + title + '</th></tr>';
-                        //         });
-                        //         innerHtml += '</thead><tbody>';
-                        //
-                        //         bodyLines.forEach(function(body, i) {
-                        //             const colors = tooltipModel.labelColors[i];
-                        //             let style = 'background:' + colors.backgroundColor;
-                        //             style += '; border-color:' + colors.borderColor;
-                        //             style += '; border-width: 2px';
-                        //             const span = '<span style="' + style + '"></span>';
-                        //             innerHtml += '<tr><td>' + span + body + '</td></tr>';
-                        //         });
-                        //         innerHtml += '</tbody>';
-                        //
-                        //         let tableRoot = tooltipEl.querySelector('table');
-                        //         tableRoot.innerHTML = innerHtml;
-                        //     }
-                        //
-                        //     const position = context.chart.canvas.getBoundingClientRect();
-                        //
-                        //     // Display, position, and set styles for font
-                        //     tooltipEl.style.opacity = 1;
-                        //     tooltipEl.style.position = 'absolute';
-                        //     tooltipEl.style.left = position.left + window.pageXOffset + tooltipModel.caretX + 'px';
-                        //     tooltipEl.style.top = position.top + window.pageYOffset + tooltipModel.caretY + 'px';
-                        //     tooltipEl.style.padding = tooltipModel.padding + 'px ' + tooltipModel.padding + 'px';
-                        //     tooltipEl.style.pointerEvents = 'none';
-                        // },
                         callbacks: {
                             label: (context)=>{
                                 return `${this.$t('ui.graphs.trashes.'+(context.label))} - ${getUnit(context.raw)}`
@@ -127,6 +74,13 @@ export default {
                                 arr.push(((context.raw / this.sum) * 100).toFixed(2) + '%')
                                 return arr;
                             },
+                        },
+                        external: (tooltipModel) => {
+                            let tooltip = tooltipModel.tooltip
+                            let dataPoint = tooltip.dataPoints[0];
+                            this.tooltip.name = `${this.$t('ui.graphs.trashes.'+(dataPoint.label))} - ${prettify(getUnit(dataPoint.raw))}`
+                            this.tooltip.value = ((dataPoint.raw / this.sum) * 100).toFixed(2) + '%';
+                            this.tooltip.show = tooltip.opacity > 0;
                         }
                     },
                 }
@@ -134,6 +88,7 @@ export default {
         }
     },
     components: {
+        Tooltip,
         CustomMarker,
         Pie
     },
@@ -180,17 +135,32 @@ export default {
                 datasets: this.datasets
             }
         },
+        styles() {
+            return {
+                position: 'relative',
+                width: this.sizes.width,
+                height: this.sizes.height,
+            }
+        }
     },
     watch: {
         year() {
             this.updateData()
         },
-        width() {
+        sizes() {
+            let chart = this.$refs[this.region.id].chart.canvas
+            chart.style.border = '1px solid #000'
             this.$refs[this.region.id].updateChart()
         }
     }
 }
 </script>
+
+<style>
+.marker-wrapper canvas {
+
+}
+</style>
 
 <style scoped>
 .tooltip {

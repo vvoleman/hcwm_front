@@ -109,4 +109,15 @@ body{
     font-size:1.3em;
     color: var(--navbar-bg);
 }
+
+.dropdown-menu {
+    border-radius: inherit;
+    box-shadow: var(--folder-alt-shadow);
+}
+
+/* Add left border to dropdown-item on hover - use pseudo element */
+.dropdown-item:hover {
+    border-left: 3px solid var(--main-color-darkest);
+    padding-left: calc(1rem - 3px);
+}
 </style>
