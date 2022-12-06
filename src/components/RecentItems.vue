@@ -12,6 +12,7 @@
                 :abstract="item.abstract"
                 :categories="item.categories"
                 :url="item.url"
+                :addedAt="item.dateAdded"
             />
         </div>
     </div>

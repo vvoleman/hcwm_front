@@ -12,7 +12,7 @@
         <template #body>
             <SelectAreas :areas="selectedAreas" @cancel="cancelSelection" />
             <div class="col-md-12 map-container">
-                <MapChart
+                <MapgChart
                     :year="selected.year"
                     :type="selected.type"
                     :id="selected.id"

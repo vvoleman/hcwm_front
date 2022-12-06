@@ -18,6 +18,14 @@
                 <p v-if="!loadingTranslation">{{ text }}</p>
             </Transition>
         </div>
+        <div class="box">
+            <b>Datum přidání:</b>
+            <span>{{formattedDate}}</span>
+        </div>
+        <div class="box url">
+            <b>URL:</b>
+            <a :href="url">{{ formattedUrl }}</a>
+        </div>
         <div class="tags">
             <button class="tag" v-for="tag in categories" :key="tag.id" @click="handleTagClick(tag.id)">
                 <span>
@@ -43,7 +51,8 @@ export default {
         title: Array,
         abstract: String,
         categories: Array,
-        url: String
+        url: String,
+        addedAt: String,
     },
     data() {
         return {
@@ -55,11 +64,21 @@ export default {
     computed: {
         currentLocale() {
             return this.$i18n.locale
+        },
+        formattedUrl() {
+            // get domain name: https://google.com -> google.com
+            return this.url.replace(/(https?:\/\/)?(www\.)?/g, '').split('/')[0]
+        },
+        formattedDate() {
+            if (this.addedAt === undefined) return ' - '
+
+            return new Date(this.addedAt).toLocaleDateString()
         }
     },
     methods: {
         ...mapActions(useTranslationStore, ['getTranslation']),
         async translateAbstract(code) {
+            console.log(code)
             this.loadingTranslation = true
             const result = await useTranslationStore().translate(this.id, code)
             this.loadingTranslation = false
@@ -79,9 +98,12 @@ export default {
 </script>
 
 <style scoped>
+.item a {
+    color: inherit;
+}
 .item {
     padding: 15px;
-    width: calc(25% - 10px);
+    width: calc(33% - 10px);
     margin-right: 10px;
     box-shadow: 0 0 3px 0 rgb(0 0 0 / 20%);
     min-height: 50px;
@@ -90,6 +112,17 @@ export default {
     margin-top: 15px;
     display: flex;
     flex-direction: column;
+}
+
+.box > *{
+    margin-left: 5px;
+}
+
+.box {
+    background: #ddd;
+    padding: 5px 10px;
+    margin-top: 10px;
+    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.2);
 }
 
 .tag::before {
@@ -120,7 +153,6 @@ export default {
 .item .title-line {
     display: flex;
     justify-content: space-between;
-    flex: 1;
 }
 
 .item .abstract {
@@ -134,7 +166,9 @@ export default {
 
 .item .title-line h3 {
     width: 80%;
-    font-size: 23px;
+    height: 100px;
+    overflow-x: auto;
+    font-size: 20px;
 }
 
 .item .title-line button {

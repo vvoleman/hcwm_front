@@ -7,7 +7,7 @@ export const useTranslationStore = defineStore('ZoteroTranslationStore', {
 	state: () => {
 		return {
 			translations: {},
-			translationsPromise: null
+			translationsPromise: {}
 		}
 	},
 	actions: {
@@ -27,15 +27,15 @@ export const useTranslationStore = defineStore('ZoteroTranslationStore', {
 			this.translationsPromise[hashed] = null
 		},
 		async loadOrAwait(item,code,hashed) {
-			if(this.translationsPromise === null) {
+			if(this.translationsPromise[hashed] === null || this.translationsPromise[hashed] === undefined) {
 				await this.load(item, code, hashed)
 			} else {
 				await this.translationsPromise
 			}
 		},
 		async translate(item,code) {
+			console.log(item,code)
 			let hashed = this.hash(item,code)
-			console.log(item, code)
 			if(this.translations[hashed] === undefined) {
 				console.log(this.translations[hashed])
 				await this.loadOrAwait(item, code, hashed)

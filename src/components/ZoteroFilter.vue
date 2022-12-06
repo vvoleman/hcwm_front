@@ -97,7 +97,6 @@ export default {
 
         // On filter change
         emitter.on('filter-changed', (data) => {
-            console.log('CLICKED',data)
             this.selectedCategories = data.categories
             // set current route to /
             this.search()

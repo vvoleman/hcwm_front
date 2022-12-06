@@ -22,7 +22,8 @@ export const useTrashStore = defineStore('TrashStore', {
 				},
 				'legend': null
 			},
-			'legend': {}
+			'legend': {},
+			'colors': {},
 		}
 	},
 	actions: {
@@ -111,11 +112,23 @@ export const useTrashStore = defineStore('TrashStore', {
 
 			if (response.status === 200) {
 				this.legend = response.data.data
+				this.legend = {
+					allowed: this.legend.allowed,
+					others: this.legend.others,
+				}
+				this.colors = response.data.data.colors
 
 				return this.legend
 			} else {
 				return null;
 			}
+		},
+		async getColor(id) {
+			if (this.colors[id] === undefined) {
+				await this.getTrashLegend()
+			}
+
+			return this.colors[id]
 		}
 	}
 

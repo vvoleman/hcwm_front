@@ -43,7 +43,7 @@ export default {
     .navbar {
         background-color: var(--navbar-bg);
         font-family: var(--navbar-font), serif;
-        box-shadow: 0px 1px 8px -5px rgba(0,0,0,0.75);
+        box-shadow: 0px 3px 0px 0px rgba(32,80,70,.8);
     }
 
     .navbar a {
