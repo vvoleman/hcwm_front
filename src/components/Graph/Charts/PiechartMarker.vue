@@ -14,7 +14,8 @@
             <tooltip
                 :show="tooltip.show"
                 :name="tooltip.name"
-                :value="tooltip.value"
+                :rawValue="tooltip.rawValue"
+                :percValue="tooltip.percValue"
                 :x="tooltip.x"
                 :y="tooltip.y"
             />
@@ -31,11 +32,12 @@ import {stringToColor} from "@/logics/hash";
 import {getUnit} from "@/logics/units";
 import Tooltip from "@/components/Graph/Charts/Tooltip";
 import {prettify} from "@/logics/helpers";
+
 ChartJS.register(ArcElement, Legend);
 export default {
     name: "PiechartMarker",
     props: {
-        sizes: {type: Object, required:true},
+        sizes: {type: Object, required: true},
         map: {type: Object, required: true},
         region: {type: Object, required: true},
         year: {type: Number, required: true},
@@ -45,7 +47,8 @@ export default {
             tooltip: {
                 show: false,
                 name: '',
-                value: '',
+                rawValue: '',
+                percValue: '',
                 x: 0,
                 y: 0,
             },
@@ -65,8 +68,8 @@ export default {
                         caretSize: 0,
                         position: "nearest",
                         callbacks: {
-                            label: (context)=>{
-                                return `${this.$t('ui.graphs.trashes.'+(context.label))} - ${getUnit(context.raw)}`
+                            label: (context) => {
+                                return `${this.$t('ui.graphs.trashes.' + (context.label))} - ${getUnit(context.raw)}`
                             },
                             afterBody: (context) => {
                                 context = context[0]
@@ -78,8 +81,9 @@ export default {
                         external: (tooltipModel) => {
                             let tooltip = tooltipModel.tooltip
                             let dataPoint = tooltip.dataPoints[0];
-                            this.tooltip.name = `${this.$t('ui.graphs.trashes.'+(dataPoint.label))} - ${prettify(getUnit(dataPoint.raw))}`
-                            this.tooltip.value = ((dataPoint.raw / this.sum) * 100).toFixed(2) + '%';
+                            this.tooltip.name = this.$t('ui.graphs.trashes.' + (dataPoint.label))
+                            this.tooltip.rawValue = prettify(getUnit(dataPoint.raw))
+                            this.tooltip.percValue = ((dataPoint.raw / this.sum) * 100).toFixed(2) + '%';
                             this.tooltip.show = tooltip.opacity > 0;
                         }
                     },
@@ -135,11 +139,10 @@ export default {
                 datasets: this.datasets
             }
         },
-        styles() {
+        myStyles() {
             return {
-                position: 'relative',
-                width: this.sizes.width,
-                height: this.sizes.height,
+                height: `${this.sizes.height}px`,
+                position: 'relative'
             }
         }
     },
@@ -148,8 +151,9 @@ export default {
             this.updateData()
         },
         sizes() {
-            let chart = this.$refs[this.region.id].chart.canvas
-            chart.style.border = '1px solid #000'
+            let chart = this.$refs[this.region.id].chart
+            chart.resize(this.sizes.width, this.sizes.height);
+
             this.$refs[this.region.id].updateChart()
         }
     }
@@ -165,10 +169,14 @@ export default {
 <style scoped>
 .tooltip {
     left: 0;
-    padding:30px;
+    padding: 30px;
     background: black;
-    color:white;
-    position:absolute;
+    color: white;
+    position: absolute;
     z-index: 5;
+}
+
+.pie-container {
+    position: relative;
 }
 </style>

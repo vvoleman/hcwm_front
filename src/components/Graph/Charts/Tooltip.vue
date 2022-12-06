@@ -1,7 +1,8 @@
 <template>
-    <div class="aaa" v-if="show">
-        <b>{{name}}: </b>
-        <span>{{value}}</span>
+    <div class="aaa" v-if="show || true">
+        <b>{{name}}: </b><br>
+        <span>{{percValue}}</span><br>
+        <span>{{rawValue}}</span>
     </div>
 </template>
 
@@ -14,7 +15,8 @@ export default {
             default: false
         },
         name: String,
-        value: String,
+        rawValue: String,
+        percValue: String,
         x: Number,
         y: Number,
     },

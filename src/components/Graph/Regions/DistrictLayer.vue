@@ -12,7 +12,6 @@
                 :geojson="record"
             />
             <CitiesLayer
-                v-if="false"
                 :zoom="zoom"
                 :map="map"
                 :year="year"
@@ -62,7 +61,7 @@ export default {
         LGeoJson,
         LFeatureGroup,
     },
-    data(){
+    data() {
         return {
             displayDetails: {},
             details: {},
@@ -82,7 +81,7 @@ export default {
         canDisplayDetail(id) {
             return this.displayDetails[id] !== undefined;
         },
-        handleReady(e){
+        handleReady(e) {
             this.$emit('setBounds', e)
         }
     },
@@ -101,10 +100,23 @@ export default {
                 onEachFeature: (feature, layer) => {
                     if (feature.properties && feature.properties.name) {
                         layer.bindPopup(feature.properties.name, {closeButton: false, offset: L.point(0, 0)});
-                        layer.on('mouseover', function () {
+                        layer.on('mouseover', () => {
+                            // change background color of layer to indicate mouseover to slightly darker
+                            layer.setStyle({
+                                fillOpacity: .7,
+                            });
                             layer.openPopup();
                         });
-                        layer.on('mouseout', function () {
+                        layer.on('mouseout', () => {
+                            // change background color of layer to indicate mouseover to slightly darker
+
+                            layer.setStyle({
+                                fillOpacity: .3,
+                            });
+
+                        });
+                        layer.on('mouseleave', function () {
+                            // change background color back
                             layer.closePopup();
                         });
                     }

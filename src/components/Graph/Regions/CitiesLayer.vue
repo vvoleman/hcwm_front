@@ -44,8 +44,8 @@ export default {
                     height: 120
                 },
                 10: {
-                    width: 140,
-                    height: 140
+                    width: 200,
+                    height: 200
                 },
             },
             trashes: {},
@@ -61,6 +61,7 @@ export default {
     },
     computed: {
         size() {
+            //return this.sizes[7]
             return this.sizes[this.zoom] || this.sizes[7]
         }
     },
