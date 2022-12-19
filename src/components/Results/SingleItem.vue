@@ -4,11 +4,11 @@
             <h3>
                 {{ getTranslation(title, currentLocale).text }}
             </h3>
-            <TranslateModal
+            <!--<TranslateModal
                 v-if="displayTranslate"
                 @close="displayTranslate = !displayTranslate"
                 @select="translateAbstract"
-            />
+            />!-->
             <button class="btn-gray center icon dripicons-map" @click="displayTranslate = !displayTranslate">
 
             </button>
@@ -37,7 +37,6 @@
 </template>
 
 <script>
-import TranslateModal from "@/components/TranslateModal";
 import {useTranslationStore} from "@/stores/Zotero/TranslationStore";
 import {mapActions} from "pinia";
 import {emitter} from "@/composables/useEvent";
@@ -45,7 +44,7 @@ import FilterData from "@/logics/api/data/FilterData";
 
 export default {
     name: "SingleItem",
-    components: {TranslateModal},
+    components: {},
     props: {
         id: String,
         title: Array,
