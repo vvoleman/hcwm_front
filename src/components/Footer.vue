@@ -10,9 +10,9 @@
         <span class="">&copy; 2022 xxx</span>
         <ul class="nav col-md-4 justify-content-end d-flex">
 
-            <li class="ms-3"><a class="" href="#">TAČR</a></li>
-            <li class="ms-3"><a class="" href="#">TUL</a></li>
-            <li class="ms-3"><a class="" href="#">Další odkaz</a></li>
+            <li class="ms-3"><a class="" href="https://tacr.cz">TAČR</a></li>
+            <li class="ms-3"><a class="" href="https://fm.tul.cz">TUL</a></li>
+            <li class="ms-3"><a class="" href="https://jispen.inisoft.cz">JISPEN</a></li>
         </ul>
     </footer>
 </template>

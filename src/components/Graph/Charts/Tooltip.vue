@@ -1,5 +1,5 @@
 <template>
-    <div class="aaa" v-if="show || true">
+    <div class="aaa" v-if="show">
         <b>{{name}}: </b><br>
         <span>{{percValue}}</span><br>
         <span>{{rawValue}}</span>
