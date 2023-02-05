@@ -1,9 +1,9 @@
 <template>
     <div class="bg-items">
         <div class="block-label">
-            <h3>{{$t('ui.items.recent_items')}}:</h3>
+            <h2>{{$t('ui.items.recent_items')}}:</h2>
         </div>
-        <div class="items d-lg-flex flex-wrap">
+        <div class="items">
             <SingleItem
                 v-for="item in items"
                 :key="item.id"
@@ -47,12 +47,11 @@ export default {
 
 <style scoped>
 @import "@/assets/css/variables.css";
+@import "@/assets/css/items.css";
 
 .block-label{
     padding:10px;
+    border-bottom: 2px solid var(--main-color-dark);
 }
-.bg-items{
-    padding:20px;
-    background: #f8f8f8;
-}
+
 </style>

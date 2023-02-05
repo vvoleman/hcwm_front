@@ -1,5 +1,5 @@
 <template>
-    <div class="marker-wrapper">
+    <div class="marker-wrapper" >
         <slot />
     </div>
 </template>
@@ -49,6 +49,8 @@ export default {
     },
     methods: {
         computeAlignment (alignment) {
+            return
+            // eslint-disable-next-line no-unreachable
             const div = this.$el
             let x = 0
             let y = 0

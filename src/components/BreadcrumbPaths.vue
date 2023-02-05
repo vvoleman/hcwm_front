@@ -65,6 +65,7 @@ export default {
     display:inline-block;
     border-radius: 5px;
     padding: 3px 15px;
+    box-shadow: var(--material-shadow);
     background: var(--main-color-darkest);
     color:white;
 

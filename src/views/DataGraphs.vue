@@ -65,7 +65,7 @@ export default {
     color: var(--folder-alt-color);
     margin: 5px;
     border: none;
-    box-shadow: var(--folder-alt-shadow)
+    box-shadow: var(--material-shadow-light)
 }
 
 .active {

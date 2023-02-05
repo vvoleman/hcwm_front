@@ -10,22 +10,24 @@
                 @select="translateAbstract"
             />!-->
             <button class="btn-gray center icon dripicons-map" @click="displayTranslate = !displayTranslate">
-
             </button>
         </div>
         <div class="abstract special-scroll">
             <Transition>
-                <p v-if="!loadingTranslation">{{ text }}</p>
+                <blockquote v-if="!loadingTranslation">{{ text }}</blockquote>
             </Transition>
         </div>
-        <div class="box">
-            <b>Datum přidání:</b>
-            <span>{{formattedDate}}</span>
+        <div class="attributes">
+            <div class="box">
+                <b class="dripicons-calendar"></b>
+                <span>{{ formattedDate }}</span>
+            </div>
+            <div class="box url">
+                <b class="dripicons-web"></b>
+                <a :href="url">{{ formattedUrl }}</a>
+            </div>
         </div>
-        <div class="box url">
-            <b>URL:</b>
-            <a :href="url">{{ formattedUrl }}</a>
-        </div>
+        <hr v-if="categories.length > 0">
         <div class="tags">
             <button class="tag" v-for="tag in categories" :key="tag.id" @click="handleTagClick(tag.id)">
                 <span>
@@ -69,7 +71,8 @@ export default {
             return this.url.replace(/(https?:\/\/)?(www\.)?/g, '').split('/')[0]
         },
         formattedDate() {
-            if (this.addedAt === undefined) return ' - '
+            console.log(this.addedAt)
+            if (this.addedAt === undefined) return this.$t('ui.items.no_date')
 
             return new Date(this.addedAt).toLocaleDateString()
         }
@@ -77,7 +80,6 @@ export default {
     methods: {
         ...mapActions(useTranslationStore, ['getTranslation']),
         async translateAbstract(code) {
-            console.log(code)
             this.loadingTranslation = true
             const result = await useTranslationStore().translate(this.id, code)
             this.loadingTranslation = false
@@ -97,31 +99,51 @@ export default {
 </script>
 
 <style scoped>
+.attributes {
+    display: inline-flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
 .item a {
+    text-decoration: none;
     color: inherit;
 }
+
 .item {
     padding: 15px;
-    width: calc(33% - 10px);
+    /*width: calc(33% - 10px);*/
     margin-right: 10px;
-    box-shadow: 0 0 3px 0 rgb(0 0 0 / 20%);
+    box-shadow: var(--material-shadow);
     min-height: 50px;
-    background: #eee;
-    border-radius: 5px;
+    background: #fff;
+    border-radius: 2px;
     margin-top: 15px;
     display: flex;
     flex-direction: column;
 }
 
-.box > *{
+.box > * {
     margin-left: 5px;
 }
 
+.box b {
+    font-weight: bold;
+}
+
+.dripicons-calendar {
+    margin-top: -1px;
+}
+
 .box {
-    background: #ddd;
-    padding: 5px 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: white;
+    background: var(--main-color-dark);
+    padding: 5px;
     margin-top: 10px;
-    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--material-shadow-light);
 }
 
 .tag::before {
@@ -134,15 +156,12 @@ export default {
     padding: 5px 10px;
     border-radius: 5px;
     color: var(--tag-color);
-    margin: 2px;
     background: var(--tag-bg);
 }
 
 .item .tags {
-    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.2);
-    padding: 5px;
-    background: #ddd;
-    margin-top: 10px;
+    display: inline-flex;
+    gap: 5px;
 }
 
 .item .tags .tag {
@@ -155,12 +174,18 @@ export default {
 }
 
 .item .abstract {
-    margin-top: 5px;
-    background: #ddd;
-    padding: 15px;
     height: 220px;
     overflow-y: auto;
-    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+}
+
+blockquote {
+    border-left: 8px solid var(--main-color-dark);
+    padding: 0.5em 10px;
+}
+
+blockquote p {
+    display: inline;
 }
 
 .item .title-line h3 {
@@ -176,17 +201,15 @@ export default {
 }
 
 .item .tags {
-    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.2);
-    padding: 5px;
-    background: #ddd;
-    margin-top: 10px;
+    /*margin-top: 10px;*/
 }
 
 .item .tags .tag {
     display: inline-block;
-    border:none;
+    border: none;
 }
-.item .tags .tag:hover{
+
+.item .tags .tag:hover {
     background: var(--main-color-darkest);
 }
 
@@ -202,25 +225,6 @@ export default {
     .item {
         padding: 30px;
         width: 100%;
-    }
-}
-
-@media only screen and (max-width: 1200px) {
-    .item {
-        width: calc(100% / 12 * 4 - 10px);
-    }
-}
-
-@media only screen and (max-width: 850px) {
-    .item {
-        width: calc(100% / 12 * 6 - 10px);
-    }
-}
-
-@media only screen and (max-width: 600px) {
-    .item {
-        margin-left: 15px;
-        width: calc(100% / 12 * 12 - 30px);
     }
 }
 

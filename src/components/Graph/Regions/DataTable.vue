@@ -1,14 +1,6 @@
 <template>
     <div class="d-md-flex flex-wrap"
          :class="{'justify-content-between':areaSelected.length > 0, 'justify-content-end': areaSelected.length === 0}">
-        <div v-if="areaSelected != null && areaSelected.length > 0">
-            <button @click="cancelSelection" class="btn-export">
-                {{ $t('ui.graphs.cancel_selection_btn') }}
-            </button>
-            <button @click="changeOnlySelected" class="btn-export">
-                {{ $t('ui.graphs.show_only_selection_btn') }}
-            </button>
-        </div>
         <button @click="exportTable" class="btn-export" :aria-label="$t('ui.graphs.export_btn')">Exportovat</button>
     </div>
     <table class="table table-hover" :id="idTable">
@@ -54,6 +46,7 @@ import {useGeographyStore} from "@/stores/Geography/GeographyStore";
 
 export default {
     name: "DataTable",
+    emits: ['exportTable'],
     props: {
         type: {
             type: String,
@@ -95,13 +88,6 @@ export default {
         }
     },
     methods: {
-        changeOnlySelected() {
-            console.log(`Changing from ${this.showOnlySelected} to ${!this.showOnlySelected}`)
-            this.showOnlySelected = !this.showOnlySelected
-        },
-        cancelSelection() {
-            this.$emit('cancelSelection', null)
-        },
         adjustSelection() {
             let adjusted = {}
             for (const area of this.areaSelected.values()) {

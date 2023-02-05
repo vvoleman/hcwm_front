@@ -27,10 +27,9 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 10px;
     background: var(--folder-bg);
     color: var(--folder-color);
-    box-shadow: 0px 0px 3px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--material-shadow);
     font-weight: bold;
 }
 

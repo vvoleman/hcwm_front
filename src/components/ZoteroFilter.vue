@@ -2,7 +2,7 @@
     <div class="filter-block col-md-10 col-11 mx-auto">
         <SearchInput @update="(data) => {selectedQuery = data}" @search="search"/>
         <div class="advanced-filter-separator">
-            <span>{{ $t('ui.collections.advanced_filter') }}</span>
+            <b>{{ $t('ui.collections.advanced_filter') }}</b>
             <button
                 @click="displayAdvanced = !displayAdvanced"
                 class="center icon btn-gray"

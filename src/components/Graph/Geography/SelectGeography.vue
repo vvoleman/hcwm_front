@@ -1,5 +1,5 @@
 <template>
-    <div class="d-block d-md-flex body">
+    <div class="select-container">
         <div class="item" v-if="!disableYear && selected.year !== 0">
             <label for="year">{{ $t('ui.graphs.choose_year') }}</label>
             <select id="year" v-model="selected.year">
@@ -40,6 +40,7 @@ import {useRegionStore} from "@/stores/Geography/RegionStore";
 
 export default {
     name: "SelectGeography",
+    emits: ['update', 'loading'],
     components: {},
     props: {
         disableDistrict: {
@@ -114,6 +115,7 @@ export default {
             this.loadings[type] = value
 
             this.isLoading = value ? value : this.loadings['country'] && this.loadings['region'] && this.loadings['district']
+            this.$emit('loading', this.isLoading)
         },
         async loadRegions() {
             this.regions = await useRegionStore().getAllRegions(this.selected.country)
@@ -194,6 +196,11 @@ export default {
 
 <style scoped>
 
+.select-container {
+    display:inline-flex;
+    gap:5px;
+}
+
 body{
     margin-bottom: 1rem;
 }
@@ -201,16 +208,16 @@ body{
 /* All .item will have same height based on child with biggest height. Make some space between them (left and right) */
 .item {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
+    /*width: 100%;*/
     height: 100%;
     margin-right: 5px;
+    box-shadow: var(--material-shadow);
 }
 
 label {
-    /*clip-path: polygon(75% 0, 0 0, 0 100%, 75% 100%, 100% 50%);*/
+    display:flex;
     padding: 12px 20px;
-    height: auto;
+    align-items: center;
     background: var(--main-color-dark);
     color: white;
 }
@@ -226,6 +233,22 @@ select[disabled] {
     opacity: 0.6;
 }
 
+@media screen and (max-width: 950px) {
+    .select-container {
+        display:flex;
+        flex-direction: column;
+    }
+    .item {
+        width: 100%;
+    }
+    label {
+        justify-content: center;
+        width: 25%;
+    }
+    select {
+        width:75%;
+    }
+}
 
 @media screen and (max-width: 768px) {
 

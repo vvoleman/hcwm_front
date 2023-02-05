@@ -78,7 +78,6 @@ export const useGeographyStore = defineStore('GeographyStore', {
 			const allowed = ['country', 'region', 'district']
 
 			if (allowed.filter(x => x === type).length === 0) {
-				console.error(`Trash for ${type} not allowed. Can't get its name`)
 				return {}
 			}
 
@@ -136,10 +135,6 @@ export const useGeographyStore = defineStore('GeographyStore', {
 			const allowed = ['country', 'region', 'district']
 
 			const result = allowed.filter(x => x === type).length === 0
-
-			if (result) {
-				console.error(`Trash for ${type} not allowed`)
-			}
 
 			return !result
 		}

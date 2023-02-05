@@ -1,5 +1,5 @@
 <template>
-    <div class="col-md-10 mx-auto">
+    <div class="col-11 col-md-10 mx-auto">
         <BreadcrumbsPath :breadcrumbs="breadcrumbs"/>
         <div class="results-block">
             <div v-if="!isLoading">
@@ -22,7 +22,7 @@
                 <SpinLoader class="loader"></SpinLoader>
             </div>
         </div>
-        <RecentItems style="margin-top:20px"/>
+        <RecentItems style="margin-top:40px"/>
     </div>
 
 </template>
@@ -77,6 +77,7 @@ export default {
 .folder-block {
     display: flex;
     flex-wrap: wrap;
+    gap: 10px;
 }
 .loader{
     margin-top:15px;

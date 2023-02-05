@@ -1,5 +1,4 @@
 <template>
-    <h3>{{zoom}}</h3>
     <l-map
         ref="map"
         :options="mapOptions"
@@ -109,7 +108,7 @@ export default {
             default: () => []
         },
     },
-    emits: ['geography-selected', 'ready'],
+    emits: ['ready'],
     data() {
         return {
             mapOptions: {
@@ -120,9 +119,9 @@ export default {
                 latLng(51.008241453210516, 19.935055736755313)
             ),
             zooms: {
-                region: {min: 8, max: 12},
+                region: {min: 7, max: 12},
                 country: {min: 7, max: 12},
-                '': {min: 7, max: 8}
+                '': {min: 7, max: 12}
             },
             bounds: [],
             zoom: 7,
@@ -147,9 +146,6 @@ export default {
 
             return (feature, layer) => {
                 if (feature.properties && feature.properties.name) {
-                    layer.on('click', () => {
-                        this.$emit('geography-selected', feature.properties.id)
-                    })
                     layer.bindPopup(feature.properties.name, {closeButton: false, offset: L.point(0, -30)});
                     layer.on('mouseover', function () {
                         // change background color of layer to indicate mouseover to slightly darker
@@ -182,7 +178,6 @@ export default {
     methods: {
         setBounds(e) {
             this.$nextTick(() => {
-                console.log(e);
                 this.bounds = e.getBounds()
             })
         },

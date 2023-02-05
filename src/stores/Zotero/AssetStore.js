@@ -61,7 +61,6 @@ export const useAssetStore = defineStore('ZoteroAssetStore', {
 			return this.categories
 		},
 		async allLanguages(){
-			console.log(this)
 			if (this.languages.length === 0) {
 				await this.loadOrAwaitLanguages()
 			}

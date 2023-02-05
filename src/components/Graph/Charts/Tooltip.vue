@@ -1,5 +1,5 @@
 <template>
-    <div class="aaa" v-if="show">
+    <div class="custom-tooltip" v-if="show">
         <b>{{name}}: </b><br>
         <span>{{percValue}}</span><br>
         <span>{{rawValue}}</span>
@@ -27,7 +27,7 @@ export default {
 </script>
 
 <style scoped>
-.aaa {
+.custom-tooltip {
     width: 100px;
     position: absolute;
     background: #fff;

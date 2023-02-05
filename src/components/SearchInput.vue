@@ -33,7 +33,7 @@ export default {
     width: 60%;
     border: 1px solid #ccc;
     padding:5px;
-    box-shadow: 0px 0px 3px 0px rgba(221,211,203,.8);
+    box-shadow: var(--material-shadow-light);
 }
 
 .search-block .btn-search{

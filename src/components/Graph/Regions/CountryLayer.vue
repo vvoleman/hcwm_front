@@ -38,7 +38,6 @@ export default {
     },
     async mounted() {
         const borders = await useGeojsonBordersStore().getCountryBorders('cz');
-        console.log(borders)
         this.countryBorders = borders;
     },
     computed: {

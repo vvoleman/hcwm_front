@@ -101,17 +101,15 @@ export default {
                     if (feature.properties && feature.properties.name) {
                         layer.bindPopup(feature.properties.name, {closeButton: false, offset: L.point(0, 0)});
                         layer.on('mouseover', () => {
-                            // change background color of layer to indicate mouseover to slightly darker
                             layer.setStyle({
                                 fillOpacity: .7,
                             });
                             layer.openPopup();
                         });
                         layer.on('mouseout', () => {
-                            // change background color of layer to indicate mouseover to slightly darker
-
+                            layer.closePopup();
                             layer.setStyle({
-                                fillOpacity: .3,
+                                fillOpacity: .5,
                             });
 
                         });

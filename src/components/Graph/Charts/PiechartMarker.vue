@@ -1,9 +1,12 @@
 <template>
     <custom-marker
         :map="map"
+        alignment="topleft"
         :marker="getCoords(region.coords)"
+        :style="{marginLeft: offset.left+'px', marginTop: offset.top+'px'}"
+        class="marker"
     >
-        <div>
+        <div >
             <Pie
                 :ref="region.id"
                 :chart-options="chartOptions"
@@ -133,6 +136,12 @@ export default {
         }
     },
     computed: {
+        offset() {
+            return {
+                top: -this.sizes.height/2,
+                left: -this.sizes.width/2
+            }
+        },
         chartData() {
             return {
                 labels: this.labels,
@@ -152,6 +161,7 @@ export default {
         },
         sizes() {
             let chart = this.$refs[this.region.id].chart
+
             chart.resize(this.sizes.width, this.sizes.height);
 
             this.$refs[this.region.id].updateChart()

@@ -1,7 +1,7 @@
 <template>
     <h3>{{ $t('ui.graphs.by_regions.titles.main') }}</h3>
     <div>
-        <SelectGeography @update="handleGeographyUpdate" :disable-district="true" :disable-year="false"/>
+        <SelectGeography @update="handleGeographyUpdate" @loading="setLoading" :disable-district="true" :disable-year="false"/>
     </div>
     <SegmentWrapper>
         <template #title>
@@ -10,14 +10,11 @@
             <small v-if="!isReady" class="subtitle"><br>{{ $t('ui.graphs.loading') }}</small>
         </template>
         <template #body>
-            <SelectAreas :areas="selectedAreas" @cancel="cancelSelection" />
             <div class="col-md-12 map-container">
                 <MapChart
                     :year="selected.year"
                     :type="selected.type"
                     :id="selected.id"
-                    :selected-areas-ids="selectedAreasIds"
-                    @geography-selected="handleGeographySelected"
                     @ready="mapReady"
                 />
             </div>
@@ -34,9 +31,7 @@
                     v-bind="selected"
                     :year="selected.year"
                     id-table="trashByRegions"
-                    :area-selected="selectedAreas"
                     @exportTable="exportTable"
-                    @cancelSelection="cancelSelection"
                 />
             </div>
         </template>
@@ -75,13 +70,11 @@ import {useGeographyStore} from "@/stores/Geography/GeographyStore";
 import {useTrashStore} from "@/stores/Trash/TrashStore";
 import SegmentWrapper from "@/components/Graph/SegmentWrapper";
 import TrashLegendItem from "@/components/Graph/TrashLegendItem";
-import SelectAreas from "@/components/Graph/Regions/SelectAreas";
 import {downloadTable} from "@/logics/api/spreadsheets";
 
 export default {
     name: 'TrashByRegions',
     components: {
-        SelectAreas,
         TrashLegendItem,
         SegmentWrapper,
         DataTable,
@@ -100,8 +93,6 @@ export default {
                 parentId: '',
                 year: 2009
             },
-            selectedAreasIds: {},
-            selectedAreas: []
         };
     },
     computed: {
@@ -110,46 +101,19 @@ export default {
         },
     },
     methods: {
+        setLoading(value) {
+            this.isReady = !value
+        },
         async exportTable(id) {
             await downloadTable(id, `${this.selected.type}/${this.selected.id}/${this.selected.year}`, `trashByRegions-${this.selected.year}`)
         },
-        cancelSelection(id){
-            if (id !== null && this.selectedAreasIds[id]) {
-                this.selectedAreasIds[id] = false;
-            } else {
-                this.selectedAreasIds = {};
-            }
-            this.setSelectedAreas()
-        },
         async handleGeographyUpdate(data) {
-            this.isReady = false;
             if (data.id === this.selected.id && data.year === this.selected.year) {
                 return
             }
 
             this.selected = {type: data.type, id: data.id, parentId: data.parentId, year: data.year}
             await this.refreshTrash(data.type, data.id)
-        },
-        async handleGeographySelected(data) {
-            this.selectedAreasIds[data] = 1
-            await this.setSelectedAreas()
-        },
-        async setSelectedAreas() {
-            let areasLoaded = await useGeographyStore().getGeography(this.selected.type, this.selected.id)
-            let areas = []
-            let name = this.selected.type === 'country' ? 'region' : 'district'
-            console.log(this.selectedAreasIds)
-            for (const item of Object.values(areasLoaded)) {
-                let idName = name+'_id'
-                let val = this.selectedAreasIds[item[idName]]
-                if (val) {
-                    areas.push({
-                        id: item[idName],
-                        name: item['name']
-                    })
-                }
-            }
-            this.selectedAreas = areas
         },
         async refreshTrash(geographyType, id) {
             this.trashes = await useTrashStore().getTrash(geographyType, id)

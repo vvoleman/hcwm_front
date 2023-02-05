@@ -7,9 +7,10 @@
     --main-color-light: #9BAE90;
     --main-color-lighest: #DDD3CB ;
 
-
+    --material-shadow: 0 3px 6px rgba(0,0,0,0.03), 0 3px 6px rgba(0,0,0,0.10);
+    --material-shadow-light: 0 3px 6px rgba(0,0,0,0.03), 0 3px 6px rgba(0,0,0,0.03);
     --folder-bg: var(--main-color-dark);
-    --folder-alt-bg: #ede8e4;
+    --folder-alt-bg: white;
     --folder-alt-shadow: 0px 0px 3px 0px rgba(221,211,203,0.4);
     --folder-alt-color: black;
     --folder-color: white;

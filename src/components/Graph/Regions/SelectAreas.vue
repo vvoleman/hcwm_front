@@ -10,6 +10,7 @@
 <script>
 export default {
     name: "SelectAreas",
+    emits: ['cancel'],
     props: {
         areas: {
             type: Array,

@@ -63,8 +63,8 @@ span{
     display:block;
 }
 .line {
-    box-shadow: var(--folder-alt-shadow);
-    border-radius: 5px;
+    box-shadow: var(--material-shadow);
+    border-radius: 2px;
     margin:10px;
     background: var(--main-color-dark);
     padding: 15px;

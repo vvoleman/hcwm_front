@@ -1,5 +1,5 @@
 <template>
-    <div class="zotero-items" v-if="items.length > 0">
+    <div class="items" v-if="items.length > 0">
         <SingleItem
             v-for="item in items"
             :key="item.id"
@@ -7,6 +7,7 @@
             :title="item.title"
             :abstract="item.abstract"
             :categories="item.categories"
+            :added-at="item.dateAdded"
             :url="item.url"
         />
     </div>
@@ -22,15 +23,12 @@ export default {
     components: {SingleItem},
     props: {
         items: Array
-    }
+    },
 }
 </script>
 
 <style scoped>
-.zotero-items {
-    display:flex;
-    flex-wrap: wrap;
-}
+@import "@/assets/css/items.css";
 .no-results {
     margin-top: 20px;
     color: rgba(0,0,0,0.5);

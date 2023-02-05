@@ -23,6 +23,7 @@ export default {
 
 <style>
 body{
+    background: #eae7e4;
     font-family: var(--body-font);
 }
 .btn-gray{
@@ -92,14 +93,14 @@ body{
     background: #fbfaf9;
     border-radius: 3px;
     padding: 20px;
-    box-shadow: 0px 0px 3px 0px rgb(221, 211, 203);
+    box-shadow: var(--material-shadow)
 }
 
 .title {
     text-align: center;
     margin-bottom: 30px;
     padding-bottom: 10px;
-    background-image: linear-gradient(#ccc,#ccc);
+    background-image: linear-gradient(var(--main-color-light),var(--main-color-light));
     background-size: 50% 2px;
     background-position: bottom center;
     background-repeat: no-repeat;

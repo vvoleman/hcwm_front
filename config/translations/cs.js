@@ -22,7 +22,8 @@ const translations = {
 			"no_results": "Žádné výsledky",
 			"translate": "Přeložit",
 			'select_language': 'Vybert jazyk k překladu',
-			'recent_items': 'Poslední přidané články'
+			'recent_items': 'Poslední přidané články',
+			'no_date': 'Žádné datum',
 		},
 		"graphs": {
 			"by_geography": {
