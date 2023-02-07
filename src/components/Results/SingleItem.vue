@@ -161,6 +161,7 @@ export default {
 
 .item .tags {
     display: inline-flex;
+    flex-wrap: wrap;
     gap: 5px;
 }
 
