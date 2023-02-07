@@ -77,7 +77,6 @@ export default {
         })
 
         let categories = await useAssetStore().allCategories
-        console.log(categories, languages)
         if (categories === null) {
             this.$notify({
                 title: this.$t('ui.error'),

@@ -71,7 +71,6 @@ export default {
             return this.url.replace(/(https?:\/\/)?(www\.)?/g, '').split('/')[0]
         },
         formattedDate() {
-            console.log(this.addedAt)
             if (this.addedAt === undefined) return this.$t('ui.items.no_date')
 
             return new Date(this.addedAt).toLocaleDateString()
@@ -85,7 +84,6 @@ export default {
             this.loadingTranslation = false
 
             if (result != null) {
-                console.log(result)
                 this.text = result
             }
         },

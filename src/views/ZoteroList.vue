@@ -47,7 +47,6 @@ export default {
             }
         },
         search(data) {
-            console.log(data)
             this.loadItems(data)
         }
     },

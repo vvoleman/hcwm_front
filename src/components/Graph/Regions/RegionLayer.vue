@@ -95,8 +95,6 @@ export default {
     },
     computed: {
         options() {
-            let fillOpacity = this.show * .3
-            console.log(this.show, fillOpacity)
             return {
                 onEachFeature: this.onEachFeatureFunction,
                 style: this.styles
