@@ -28,7 +28,7 @@
             <b class="subtitle">{{name}}</b>
         </div>
         <div v-show="isReady">
-            <DataTable @exportTable="downloadDatasheet" :trashes="trashes" :name="name" idTable="trashByGeography"/>
+            <data-table @exportTable="downloadTable" :trashes="trashes" :name="name" id-table="trashByGeography"/>
         </div>
         <spin-loader v-show="!isReady"></spin-loader>
     </div>
@@ -65,6 +65,7 @@ import {useTrashStore} from "@/stores/Trash/TrashStore";
 import {useGeographyStore} from "@/stores/Geography/GeographyStore";
 import SegmentWrapper from "@/components/Graph/SegmentWrapper";
 import TrashLegendItem from "./TrashLegendItem";
+// eslint-disable-next-line no-unused-vars
 import {downloadTable} from "@/logics/api/spreadsheets";
 
 export default {
@@ -89,8 +90,10 @@ export default {
     async mounted() {
     },
     methods: {
+		// eslint-disable-next-line no-unused-vars
         async downloadTable(id) {
-            await downloadTable(id, `${this.selected.type}/${this.selected.id}/${this.y}`)
+			alert('Tento graf nelze exportovat do tabulky.');
+            //await downloadTable(id, `${this.selected.type}/${this.selected.id}/${this.y}`)
         },
         async handleSelectUpdate(data) {
             if (data.id === this.selected.id) {

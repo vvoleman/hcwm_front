@@ -61,6 +61,7 @@ export default {
             required: true
         },
     },
+	emits: ['exportTable'],
     data(){
         return {
             formatted: {},
@@ -95,7 +96,7 @@ export default {
             return prettify(value, suffix, precision)
         },
         exportTable(){
-            this.emit('exportTable', this.idTable)
+            this.$emit('exportTable', this.idTable)
         },
         calculateTrashSums(trashes) {
             let sums = {}
